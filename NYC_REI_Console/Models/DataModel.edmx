@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="NYC_Web_Mapping_AppModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Evictions">
+          <Key>
+            <PropertyRef Name="EvictionID" />
+          </Key>
+          <Property Name="EvictionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="COURT_INDEX_NUMBER" Type="varchar" MaxLength="50" />
+          <Property Name="DOCKET_NUMBER" Type="varchar" MaxLength="50" />
+          <Property Name="EVICTION_ADDRESS" Type="varchar(max)" />
+          <Property Name="EVICTION_APT_NUM" Type="varchar" MaxLength="50" />
+          <Property Name="EXECUTED_DATE" Type="datetime" />
+          <Property Name="MARSHAL_FIRST_NAME" Type="varchar" MaxLength="50" />
+          <Property Name="MARSHAL_LAST_NAME" Type="varchar" MaxLength="50" />
+          <Property Name="RESIDENTIAL_COMMERCIAL_IND" Type="varchar" MaxLength="50" />
+          <Property Name="BOROUGH" Type="varchar" MaxLength="50" />
+          <Property Name="EVICTION_ZIP" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="MyReports">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ReportName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="NYC_Web_Mapping_AppModelStoreContainer">
+          <EntitySet Name="Evictions" EntityType="Self.Evictions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MyReports" EntityType="Self.MyReports" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="NYC_Web_Mapping_AppModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="NYC_Web_Mapping_AppEntities" annotation:LazyLoadingEnabled="true" >
+          <EntitySet Name="MyReports" EntityType="NYC_Web_Mapping_AppModel.MyReport" />
+          <EntitySet Name="Evictions" EntityType="NYC_Web_Mapping_AppModel.Eviction" />
+        </EntityContainer>
+        <EntityType Name="MyReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ReportName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FileName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Eviction">
+          <Key>
+            <PropertyRef Name="EvictionID" />
+          </Key>
+          <Property Name="EvictionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="COURT_INDEX_NUMBER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DOCKET_NUMBER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EVICTION_ADDRESS" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EVICTION_APT_NUM" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EXECUTED_DATE" Type="DateTime" Precision="3" />
+          <Property Name="MARSHAL_FIRST_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MARSHAL_LAST_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RESIDENTIAL_COMMERCIAL_IND" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BOROUGH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EVICTION_ZIP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="NYC_Web_Mapping_AppModelStoreContainer" CdmEntityContainer="NYC_Web_Mapping_AppEntities" >
+          <EntitySetMapping Name="MyReports">
+            <EntityTypeMapping TypeName="NYC_Web_Mapping_AppModel.MyReport">
+              <MappingFragment StoreEntitySet="MyReports">
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="ReportName" ColumnName="ReportName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Evictions">
+            <EntityTypeMapping TypeName="NYC_Web_Mapping_AppModel.Eviction">
+              <MappingFragment StoreEntitySet="Evictions">
+                <ScalarProperty Name="EVICTION_ZIP" ColumnName="EVICTION_ZIP" />
+                <ScalarProperty Name="BOROUGH" ColumnName="BOROUGH" />
+                <ScalarProperty Name="RESIDENTIAL_COMMERCIAL_IND" ColumnName="RESIDENTIAL_COMMERCIAL_IND" />
+                <ScalarProperty Name="MARSHAL_LAST_NAME" ColumnName="MARSHAL_LAST_NAME" />
+                <ScalarProperty Name="MARSHAL_FIRST_NAME" ColumnName="MARSHAL_FIRST_NAME" />
+                <ScalarProperty Name="EXECUTED_DATE" ColumnName="EXECUTED_DATE" />
+                <ScalarProperty Name="EVICTION_APT_NUM" ColumnName="EVICTION_APT_NUM" />
+                <ScalarProperty Name="EVICTION_ADDRESS" ColumnName="EVICTION_ADDRESS" />
+                <ScalarProperty Name="DOCKET_NUMBER" ColumnName="DOCKET_NUMBER" />
+                <ScalarProperty Name="COURT_INDEX_NUMBER" ColumnName="COURT_INDEX_NUMBER" />
+                <ScalarProperty Name="EvictionID" ColumnName="EvictionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

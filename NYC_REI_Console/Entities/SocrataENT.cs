@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NYC_REI_Console.Entities
+{
+    class SocrataEnergy
+    {
+        public int order { get; set; }
+        public int? property_id { get; set; }
+        public string property_name { get; set; }
+        public Int64? parent_property_id { get; set; }
+        public string parent_property_name { get; set; }
+        public string bbl_10_digits { get; set; }
+        public string nyc_borough_block_and_lot { get; set; }
+        public string nyc_building_identification { get; set; }
+        public string address_1_self_reported { get; set; }
+        public string address_2_self_reported { get; set; }
+        public string postal_code { get; set; }
+        public string street_number { get; set; }
+        public string street_name { get; set; }
+        public string borough { get; set; }
+        public string dof_gross_floor_area_ft { get; set; }
+        public int? self_reported_gross_floor { get; set; }
+        public string primary_property_type_self { get; set; }
+        public string list_of_all_property_use { get; set; }
+        public string largest_property_use_type { get; set; }
+        public string largest_property_use_type_1 { get; set; }
+        public string _2nd_largest_property_use { get; set; }
+        public string _2nd_largest_property_use_1 { get; set; }
+        public string _3rd_largest_property_use { get; set; }
+        public string _3rd_largest_property_use_1 { get; set; }
+        public int? year_built { get; set; }
+        public int? number_of_buildings { get; set; }
+        public int? occupancy { get; set; }
+        public string metered_areas_energy { get; set; }
+        public string metered_areas_water { get; set; }
+        public int? energy_star_score { get; set; }
+        public float? source_eui_kbtu_ft { get; set; }
+        public float? weather_normalized_source { get; set; }
+        public float? site_eui_kbtu_ft { get; set; }
+        public float? weather_normalized_site_eui { get; set; }
+        public float? weather_normalized_site { get; set; }
+        public float? weather_normalized_site_1 { get; set; }
+        public string fuel_oil_1_use_kbtu { get; set; }
+        public float? fuel_oil_2_use_kbtu { get; set; }
+        public float? fuel_oil_4_use_kbtu { get; set; }
+        public float? fuel_oil_5_6_use_kbtu { get; set; }
+        public string diesel_2_use_kbtu { get; set; }
+        public string propane_use_kbtu { get; set; }
+        public float? district_steam_use_kbtu { get; set; }
+        public string district_hot_water_use_kbtu { get; set; }
+        public string district_chilled_water_use { get; set; }
+        public float? natural_gas_use_kbtu { get; set; }
+        public float? weather_normalized_site_2 { get; set; }
+        public float? electricity_use_grid_purchase { get; set; }
+        public float? electricity_use_grid_purchase_1 { get; set; }
+        public float? weather_normalized_site_3 { get; set; }
+        public float? annual_maximum_demand_kw { get; set; }
+        public DateTime? annual_maximum_demand_mm { get; set; }
+        public float? total_ghg_emissions_metric { get; set; }
+        public float? direct_ghg_emissions_metric { get; set; }
+        public float? indirect_ghg_emissions_metric { get; set; }
+        public float? water_use_all_water_sources { get; set; }
+        public float? water_use_intensity_all_water { get; set; }
+        public string water_required { get; set; }
+        public DateTime? generation_date { get; set; }
+        public string dof_benchmarking_submission { get; set; }
+        public float? latitude { get; set; }
+        public float? longitude { get; set; }
+        public int? community_board { get; set; }
+        public int? council_district { get; set; }
+        public int? census_tract { get; set; }
+        public string nta { get; set; }
+    }
+    class SocrataPermits
+    {
+        public string borough { get; set; }
+        public string block { get; set; }
+        public string lot { get; set; }
+        public DateTime? job_start_date { get; set; }
+        public string job_type { get; set; }
+        public string work_type { get; set; }
+        public string bbl_10_digits { get; set; }
+        public DateTime? dobrundate { get; set; }
+    }
+    class SocrataViolations
+    {
+        public string isn_dob_bis_viol { get; set; }
+        public string boro { get; set; }
+        public string bin { get; set; }
+        public string block { get; set; }
+        public string lot { get; set; }
+        public string issue_date { get; set; }
+        public string violation_type_code { get; set; }
+        public string violation_number { get; set; }
+        public string house_number { get; set; }
+        public string street { get; set; }
+        public string disposition_date { get; set; }
+        public string disposition_comments { get; set; }
+        public string device_number { get; set; }
+        public string description { get; set; }
+        public string ecb_number { get; set; }
+        public string number { get; set; }
+        public string violation_category { get; set; }
+        public string violation_type { get; set; }
+    }
+    class SocrataEvictions
+    {
+        public string COURT_INDEX_NUMBER { get; set; }
+        public string DOCKET_NUMBER { get; set; }
+        public string EVICTION_ADDRESS { get; set; }
+        public string EVICTION_APT_NUM { get; set; }
+        public DateTime? EXECUTED_DATE { get; set; }
+        public string MARSHAL_FIRST_NAME { get; set; }
+        public string MARSHAL_LAST_NAME { get; set; }
+        public string RESIDENTIAL_COMMERCIAL_IND { get; set; }
+        public string BOROUGH { get; set; }
+        public string EVICTION_ZIP { get; set; }
+    }
+    class JsonMapPlutoData
+    {
+        public List<TableFieldsMapPluto> features { get; set; }
+    }
+    class TableFieldsMapPluto
+    {
+        public MapPlutoAttributes attributes { get; set; }
+    }
+    class MapPlutoAttributes
+    {
+        public int OBJECTID { get; set; }
+        public string BBL { get; set; }
+        public string Borough { get; set; }
+        public string Address { get; set; }
+        public string ZipCode { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
+        public string BldgArea { get; set; }
+        public string ComArea { get; set; }
+        public string ResArea { get; set; }
+        public string NumFloors { get; set; }
+        public string UnitsRes { get; set; }
+        public string ZoneDist1 { get; set; }
+        public string Overlay1 { get; set; }
+        public string Overlay2 { get; set; }
+        public string AssessTot { get; set; }
+        public string YearBuilt { get; set; }
+        public string OwnerName { get; set; }
+        public string BldgClass { get; set; }
+    }
+}
