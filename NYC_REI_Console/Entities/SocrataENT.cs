@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace NYC_REI_Console.Entities
 {
+    class DatabaseMaxValues
+    {
+        public int? OBJECTID { get; set; }
+        public DateTime? generation_date { get; set; }
+        public DateTime? dobrundate { get; set; }
+        public string issue_date { get; set; }
+        public DateTime? EXECUTED_DATE { get; set; }
+    }
     class SocrataEnergy
     {
         public int order { get; set; }
@@ -137,16 +145,16 @@ namespace NYC_REI_Console.Entities
         public string ZipCode { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
-        public string BldgArea { get; set; }
-        public string ComArea { get; set; }
-        public string ResArea { get; set; }
-        public string NumFloors { get; set; }
+        public int? BldgArea { get; set; }
+        public int? ComArea { get; set; }
+        public int? ResArea { get; set; }
+        public float? NumFloors { get; set; }
         public string UnitsRes { get; set; }
         public string ZoneDist1 { get; set; }
         public string Overlay1 { get; set; }
         public string Overlay2 { get; set; }
-        public string AssessTot { get; set; }
-        public string YearBuilt { get; set; }
+        public float? AssessTot { get; set; }
+        public int? YearBuilt { get; set; }
         public string OwnerName { get; set; }
         public string BldgClass { get; set; }
     }
