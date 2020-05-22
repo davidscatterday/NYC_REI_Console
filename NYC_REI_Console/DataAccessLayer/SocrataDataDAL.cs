@@ -4,9 +4,11 @@ using NYC_REI_Console.Models;
 using SODA;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -431,6 +433,123 @@ namespace NYC_REI_Console.DataAccessLayer
                 result = ctx.Database.SqlQuery<DatabaseMaxValues>("EXEC dbo.GetMaxValues ").FirstOrDefault();
             }
             return result;
+        }
+        public void CheckAlerts(int? maxOBJECTID)
+        {
+            List<MyAlert> lstAlerts = db.MyAlerts.Where(w => DbFunctions.TruncateTime(w.Next_DateCheck.Value) == DbFunctions.TruncateTime(DateTime.Now)).ToList();
+            foreach (MyAlert alert in lstAlerts)
+            {
+                string sqlQuery = alert.AlertQuery;
+                string formatedDate = alert.Last_DateCheck.Value.ToString("yyyy'-'MM'-'dd");
+                string formatedViolationDate = alert.Last_DateCheck.Value.ToString("yyyyMMdd");
+                sqlQuery += " AND (";
+                if (alert.Last_OBJECTID.HasValue)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " p.OBJECTID > " + alert.Last_OBJECTID.Value;
+                    }
+                    else
+                    {
+                        sqlQuery += " OR p.OBJECTID > " + alert.Last_OBJECTID.Value;
+                    }
+                    if (maxOBJECTID > alert.Last_OBJECTID.Value)
+                    {
+                        alert.Last_OBJECTID = maxOBJECTID;
+                    }
+                }
+                if (alert.IsEnergySearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " en.generation_date > '" + formatedDate + "'";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR en.generation_date > '" + formatedDate + "'";
+                    }
+                }
+                if (alert.IsPermitSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " pe.dobrundate > '" + formatedDate + "'";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR pe.dobrundate > '" + formatedDate + "'";
+                    }
+                }
+                if (alert.IsViolationSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " (v.issue_date > '" + formatedViolationDate + "' AND v.issue_date LIKE '20%')";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR (v.issue_date > '" + formatedDate + "' AND v.issue_date LIKE '20%')";
+                    }
+                }
+                if (alert.IsEvictionSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " (ev.EXECUTED_DATE > '" + formatedDate + "' AND ev.EXECUTED_DATE < '2030-01-01')";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR (ev.EXECUTED_DATE > '" + formatedDate + "' AND ev.EXECUTED_DATE < '2030-01-01')";
+                    }
+                }
+                sqlQuery += ")";
+                List<DatabaseAttributes> newSearch = SearchDatabase(sqlQuery);
+                if (newSearch.Count > 0)
+                {
+                    alert.IsUnread = true;
+                    SendMail(alert.Username);
+                }
+                alert.Last_DateCheck = DateTime.Now;
+                alert.Next_DateCheck = DateTime.Now.AddDays(alert.Frequency);
+                db.Entry(alert).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+        public List<DatabaseAttributes> SearchDatabase(string sqlQuery)
+        {
+            List<DatabaseAttributes> returnResult = new List<DatabaseAttributes>();
+            using (var ctx = new NYC_Web_Mapping_AppEntities())
+            {
+                returnResult = ctx.Database.SqlQuery<DatabaseAttributes>(sqlQuery).ToList();
+            }
+            return returnResult;
+        }
+        public bool SendMail(string userEmail)
+        {
+            string subject = "You have new alert in NYC REI application";
+            string body = "<p>Visit <a href='http://13.92.226.170:3000/'>NYC REI application</a> and see new data based on your created alert</p>";
+            try
+            {
+                MailAddress from = new MailAddress(Properties.EmailSender, "NYC REI");
+                MailAddress to = new MailAddress(userEmail);
+                MailMessage mailMessage = new MailMessage(from, to);
+                mailMessage.Subject = subject;
+                mailMessage.Body = body;
+                mailMessage.IsBodyHtml = true;
+                new SmtpClient
+                {
+                    Host = Properties.SMTPClient,
+                    Port = Convert.ToInt32(Properties.SMTPPort),
+                    EnableSsl = true,
+                    Credentials = new NetworkCredential(Properties.EmailSender, Properties.Password)
+                }.Send(mailMessage);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

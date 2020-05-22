@@ -19,6 +19,7 @@ namespace NYC_REI_Console
             socrataDataDAL.InsertAllPermits(result.dobrundate);
             socrataDataDAL.InsertAllViolations(result.issue_date);
             socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
+            socrataDataDAL.CheckAlerts(result.OBJECTID);
         }
     }
 }
