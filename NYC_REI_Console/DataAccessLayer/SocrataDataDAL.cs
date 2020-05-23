@@ -509,6 +509,10 @@ namespace NYC_REI_Console.DataAccessLayer
                     alert.IsUnread = true;
                     SendMail(alert.Username);
                 }
+                else
+                {
+                    alert.IsUnread = false;
+                }
                 alert.Last_DateCheck = DateTime.Now;
                 alert.Next_DateCheck = DateTime.Now.AddDays(alert.Frequency);
                 db.Entry(alert).State = EntityState.Modified;
