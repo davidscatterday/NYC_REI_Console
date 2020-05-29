@@ -4,9 +4,11 @@ using NYC_REI_Console.Models;
 using SODA;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -17,14 +19,15 @@ namespace NYC_REI_Console.DataAccessLayer
     {
         private NYC_Web_Mapping_AppEntities db = new NYC_Web_Mapping_AppEntities();
 
-        public void GetAllMapPluto()
+        public void GetAllMapPluto(int? OBJECTID)
         {
+            int minObjectID = OBJECTID.HasValue ? OBJECTID.Value + 1 : 0;
             JsonMapPlutoData data = new JsonMapPlutoData();
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Int32.MaxValue;
             int step = 100000;
-            int ObjectIDmin = 0;
-            int ObjectIDmax = step;
+            int ObjectIDmin = minObjectID + 1;
+            int ObjectIDmax = step + minObjectID + 1;
             while (true)
             {
                 using (var client = new WebClient())
@@ -32,7 +35,7 @@ namespace NYC_REI_Console.DataAccessLayer
                     string whereClaues = "objectid >= " + ObjectIDmin + " AND objectid < " + ObjectIDmax;
                     ObjectIDmin = ObjectIDmax;
                     ObjectIDmax += step;
-                    string urlPost = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/MAPPLUTO/FeatureServer/0/query?where="+ whereClaues + "&f=pjson&returnGeometry=false&outFields=OBJECTID,BBL,Borough,Address,ZipCode,Latitude,Longitude,BldgArea,ComArea,ResArea,NumFloors,UnitsRes,ZoneDist1,Overlay1,Overlay2,AssessTot,YearBuilt,OwnerName,BldgClass";
+                    string urlPost = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/MAPPLUTO/FeatureServer/0/query?where=" + whereClaues + "&f=pjson&returnGeometry=false&outFields=OBJECTID,BBL,Borough,Address,ZipCode,Latitude,Longitude,BldgArea,ComArea,ResArea,NumFloors,UnitsRes,ZoneDist1,Overlay1,Overlay2,AssessTot,YearBuilt,OwnerName,BldgClass";
                     var json = client.DownloadString(urlPost);
 
                     data = serializer.Deserialize<JsonMapPlutoData>(json);
@@ -54,16 +57,16 @@ namespace NYC_REI_Console.DataAccessLayer
                                 var ZipCodeParametar = !String.IsNullOrEmpty(tf.attributes.ZipCode) ? new SqlParameter("ZipCode", tf.attributes.ZipCode) : new SqlParameter("ZipCode", DBNull.Value);
                                 var LatitudeParametar = !String.IsNullOrEmpty(tf.attributes.Latitude) ? new SqlParameter("Latitude", tf.attributes.Latitude) : new SqlParameter("Latitude", DBNull.Value);
                                 var LongitudeParametar = !String.IsNullOrEmpty(tf.attributes.Longitude) ? new SqlParameter("Longitude", tf.attributes.Longitude) : new SqlParameter("Longitude", DBNull.Value);
-                                var BldgAreaParametar = !String.IsNullOrEmpty(tf.attributes.BldgArea) ? new SqlParameter("BldgArea", tf.attributes.BldgArea) : new SqlParameter("BldgArea", DBNull.Value);
-                                var ComAreaParametar = !String.IsNullOrEmpty(tf.attributes.ComArea) ? new SqlParameter("ComArea", tf.attributes.ComArea) : new SqlParameter("ComArea", DBNull.Value);
-                                var ResAreaParametar = !String.IsNullOrEmpty(tf.attributes.ResArea) ? new SqlParameter("ResArea", tf.attributes.ResArea) : new SqlParameter("ResArea", DBNull.Value);
-                                var NumFloorsParametar = !String.IsNullOrEmpty(tf.attributes.NumFloors) ? new SqlParameter("NumFloors", tf.attributes.NumFloors) : new SqlParameter("NumFloors", DBNull.Value);
+                                var BldgAreaParametar = tf.attributes.BldgArea.HasValue ? new SqlParameter("BldgArea", tf.attributes.BldgArea) : new SqlParameter("BldgArea", DBNull.Value);
+                                var ComAreaParametar = tf.attributes.ComArea.HasValue ? new SqlParameter("ComArea", tf.attributes.ComArea) : new SqlParameter("ComArea", DBNull.Value);
+                                var ResAreaParametar = tf.attributes.ResArea.HasValue ? new SqlParameter("ResArea", tf.attributes.ResArea) : new SqlParameter("ResArea", DBNull.Value);
+                                var NumFloorsParametar = tf.attributes.NumFloors.HasValue ? new SqlParameter("NumFloors", tf.attributes.NumFloors) : new SqlParameter("NumFloors", DBNull.Value);
                                 var UnitsResParametar = !String.IsNullOrEmpty(tf.attributes.UnitsRes) ? new SqlParameter("UnitsRes", tf.attributes.UnitsRes) : new SqlParameter("UnitsRes", DBNull.Value);
                                 var ZoneDist1Parametar = !String.IsNullOrEmpty(tf.attributes.ZoneDist1) ? new SqlParameter("ZoneDist1", tf.attributes.ZoneDist1) : new SqlParameter("ZoneDist1", DBNull.Value);
                                 var Overlay1Parametar = !String.IsNullOrEmpty(tf.attributes.Overlay1) ? new SqlParameter("Overlay1", tf.attributes.Overlay1) : new SqlParameter("Overlay1", DBNull.Value);
                                 var Overlay2Parametar = !String.IsNullOrEmpty(tf.attributes.Overlay2) ? new SqlParameter("Overlay2", tf.attributes.Overlay2) : new SqlParameter("Overlay2", DBNull.Value);
-                                var AssessTotParametar = !String.IsNullOrEmpty(tf.attributes.AssessTot) ? new SqlParameter("AssessTot", tf.attributes.AssessTot) : new SqlParameter("AssessTot", DBNull.Value);
-                                var YearBuiltParametar = !String.IsNullOrEmpty(tf.attributes.YearBuilt) ? new SqlParameter("YearBuilt", tf.attributes.YearBuilt) : new SqlParameter("YearBuilt", DBNull.Value);
+                                var AssessTotParametar = tf.attributes.AssessTot.HasValue ? new SqlParameter("AssessTot", tf.attributes.AssessTot) : new SqlParameter("AssessTot", DBNull.Value);
+                                var YearBuiltParametar = tf.attributes.YearBuilt.HasValue ? new SqlParameter("YearBuilt", tf.attributes.YearBuilt) : new SqlParameter("YearBuilt", DBNull.Value);
                                 var OwnerNameParametar = !String.IsNullOrEmpty(tf.attributes.OwnerName) ? new SqlParameter("OwnerName", tf.attributes.OwnerName) : new SqlParameter("OwnerName", DBNull.Value);
                                 var BldgClassParametar = !String.IsNullOrEmpty(tf.attributes.BldgClass) ? new SqlParameter("BldgClass", tf.attributes.BldgClass) : new SqlParameter("BldgClass", DBNull.Value);
 
@@ -77,53 +80,7 @@ namespace NYC_REI_Console.DataAccessLayer
                 }
             }
         }
-        public void InsertAllEvictions()
-        {
-            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
-
-            // Get a reference to the resource itself
-            // The result (a Resouce object) is a generic type
-            // The type parameter represents the underlying rows of the resource
-            // and can be any JSON-serializable class
-            var dataset = client.GetResource<SocrataEvictions>(GlobalVariables.EvictionID);
-
-            IEnumerable<SocrataEvictions> rows;
-            int myLimit = 5000;
-            int myOffset = 0;
-            while (true)
-            {
-                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
-                if (rows.Count() == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    foreach (var keyValue in rows)
-                    {
-                        using (var ctx = new NYC_Web_Mapping_AppEntities())
-                        {
-                            var COURT_INDEX_NUMBERParametar = !String.IsNullOrEmpty(keyValue.COURT_INDEX_NUMBER) ? new SqlParameter("COURT_INDEX_NUMBER", keyValue.COURT_INDEX_NUMBER) : new SqlParameter("COURT_INDEX_NUMBER", DBNull.Value);
-                            var DOCKET_NUMBERParametar = !String.IsNullOrEmpty(keyValue.DOCKET_NUMBER) ? new SqlParameter("DOCKET_NUMBER", keyValue.DOCKET_NUMBER) : new SqlParameter("DOCKET_NUMBER", DBNull.Value);
-                            var EVICTION_ADDRESSParametar = !String.IsNullOrEmpty(keyValue.EVICTION_ADDRESS) ? new SqlParameter("EVICTION_ADDRESS", keyValue.EVICTION_ADDRESS) : new SqlParameter("EVICTION_ADDRESS", DBNull.Value);
-                            var EVICTION_APT_NUMParametar = !String.IsNullOrEmpty(keyValue.EVICTION_APT_NUM) ? new SqlParameter("EVICTION_APT_NUM", keyValue.EVICTION_APT_NUM) : new SqlParameter("EVICTION_APT_NUM", DBNull.Value);
-                            var EXECUTED_DATEParametar = keyValue.EXECUTED_DATE.HasValue ? new SqlParameter("EXECUTED_DATE", keyValue.EXECUTED_DATE) : new SqlParameter("EXECUTED_DATE", DBNull.Value);
-                            var MARSHAL_FIRST_NAMEParametar = !String.IsNullOrEmpty(keyValue.MARSHAL_FIRST_NAME) ? new SqlParameter("MARSHAL_FIRST_NAME", keyValue.MARSHAL_FIRST_NAME) : new SqlParameter("MARSHAL_FIRST_NAME", DBNull.Value);
-                            var MARSHAL_LAST_NAMEParametar = !String.IsNullOrEmpty(keyValue.MARSHAL_LAST_NAME) ? new SqlParameter("MARSHAL_LAST_NAME", keyValue.MARSHAL_LAST_NAME) : new SqlParameter("MARSHAL_LAST_NAME", DBNull.Value);
-                            var RESIDENTIAL_COMMERCIAL_INDParametar = !String.IsNullOrEmpty(keyValue.RESIDENTIAL_COMMERCIAL_IND) ? new SqlParameter("RESIDENTIAL_COMMERCIAL_IND", keyValue.RESIDENTIAL_COMMERCIAL_IND) : new SqlParameter("RESIDENTIAL_COMMERCIAL_IND", DBNull.Value);
-                            var BOROUGHParametar = !String.IsNullOrEmpty(keyValue.BOROUGH) ? new SqlParameter("BOROUGH", keyValue.BOROUGH) : new SqlParameter("BOROUGH", DBNull.Value);
-                            var EVICTION_ZIPParametar = !String.IsNullOrEmpty(keyValue.EVICTION_ZIP) ? new SqlParameter("EVICTION_ZIP", keyValue.EVICTION_ZIP) : new SqlParameter("EVICTION_ZIP", DBNull.Value);
-
-                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertEviction @COURT_INDEX_NUMBER, @DOCKET_NUMBER, @EVICTION_ADDRESS, @EVICTION_APT_NUM, @EXECUTED_DATE, @MARSHAL_FIRST_NAME, @MARSHAL_LAST_NAME, @RESIDENTIAL_COMMERCIAL_IND, @BOROUGH, @EVICTION_ZIP ",
-                                COURT_INDEX_NUMBERParametar, DOCKET_NUMBERParametar, EVICTION_ADDRESSParametar, EVICTION_APT_NUMParametar, EXECUTED_DATEParametar,
-                                MARSHAL_FIRST_NAMEParametar, MARSHAL_LAST_NAMEParametar, RESIDENTIAL_COMMERCIAL_INDParametar, BOROUGHParametar, EVICTION_ZIPParametar);
-                        }
-                    }
-                }
-                myOffset += myLimit;
-            }
-        }
-        public void InsertAllEnergy()
+        public void InsertAllEnergy(DateTime? generation_date)
         {
             var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
 
@@ -138,7 +95,19 @@ namespace NYC_REI_Console.DataAccessLayer
             int myOffset = 0;
             while (true)
             {
-                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                if (generation_date.HasValue)
+                {
+                    var strDate = generation_date.Value.Year + "-" + generation_date.Value.Month + "-" + generation_date.Value.Day;
+                    var soql = new SoqlQuery()
+                          .Where("generation_date > '" + strDate + "'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataEnergy>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
                 if (rows.Count() == 0)
                 {
                     break;
@@ -244,7 +213,146 @@ namespace NYC_REI_Console.DataAccessLayer
                 myOffset += myLimit;
             }
         }
-        public void InsertAllViolations()
+        public void InsertAllPermits(DateTime? dobrundate)
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<SocrataPermits>(GlobalVariables.PermitID);
+
+            IEnumerable<SocrataPermits> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                if (dobrundate.HasValue)
+                {
+                    var strDate = dobrundate.Value.Year + "-" + dobrundate.Value.Month + "-" + dobrundate.Value.Day;
+                    var soql = new SoqlQuery()
+                          .Where("dobrundate > '" + strDate + "'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataPermits>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+                        var boroNum = "";
+                        switch (keyValue.borough)
+                        {
+                            case "MANHATTAN":
+                                boroNum = "1"; break;
+                            case "BRONX":
+                                boroNum = "2"; break;
+                            case "BROOKLYN":
+                                boroNum = "3"; break;
+                            case "QUEENS":
+                                boroNum = "4"; break;
+                            case "STATEN ISLAND":
+                                boroNum = "5"; break;
+                            default:
+                                return;
+                        }
+                        string bbl_10_digits = "";
+                        if (!String.IsNullOrEmpty(boroNum) && !String.IsNullOrEmpty(keyValue.block) && !String.IsNullOrEmpty(keyValue.lot))
+                        {
+                            bbl_10_digits = boroNum + keyValue.block + keyValue.lot.Substring(1);
+                        }
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            bool validDate = false;
+                            if (keyValue.job_start_date.HasValue && keyValue.job_start_date > new DateTime(1753, 1, 1) && keyValue.job_start_date < new DateTime(9999, 1, 1))
+                            {
+                                validDate = true;
+                            }
+                            var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
+                            var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
+                            var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
+                            var job_start_dateParametar = validDate ? new SqlParameter("job_start_date", keyValue.job_start_date) : new SqlParameter("job_start_date", DBNull.Value);
+                            var job_typeParametar = !String.IsNullOrEmpty(keyValue.job_type) ? new SqlParameter("job_type", keyValue.job_type) : new SqlParameter("job_type", DBNull.Value);
+                            var work_typeParametar = !String.IsNullOrEmpty(keyValue.work_type) ? new SqlParameter("work_type", keyValue.work_type) : new SqlParameter("work_type", DBNull.Value);
+                            var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
+                            var dobrundateParametar = keyValue.dobrundate.HasValue ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate ",
+                                boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
+        public void InsertAllEvictions(DateTime? EXECUTED_DATE)
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<SocrataEvictions>(GlobalVariables.EvictionID);
+
+            IEnumerable<SocrataEvictions> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                if (EXECUTED_DATE.HasValue)
+                {
+                    var strDate = EXECUTED_DATE.Value.Year + "-" + EXECUTED_DATE.Value.Month + "-" + EXECUTED_DATE.Value.Day;
+                    var soql = new SoqlQuery()
+                          .Where("EXECUTED_DATE > '" + strDate + "' AND EXECUTED_DATE < '2030-01-01'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataEvictions>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            var COURT_INDEX_NUMBERParametar = !String.IsNullOrEmpty(keyValue.COURT_INDEX_NUMBER) ? new SqlParameter("COURT_INDEX_NUMBER", keyValue.COURT_INDEX_NUMBER) : new SqlParameter("COURT_INDEX_NUMBER", DBNull.Value);
+                            var DOCKET_NUMBERParametar = !String.IsNullOrEmpty(keyValue.DOCKET_NUMBER) ? new SqlParameter("DOCKET_NUMBER", keyValue.DOCKET_NUMBER) : new SqlParameter("DOCKET_NUMBER", DBNull.Value);
+                            var EVICTION_ADDRESSParametar = !String.IsNullOrEmpty(keyValue.EVICTION_ADDRESS) ? new SqlParameter("EVICTION_ADDRESS", keyValue.EVICTION_ADDRESS) : new SqlParameter("EVICTION_ADDRESS", DBNull.Value);
+                            var EVICTION_APT_NUMParametar = !String.IsNullOrEmpty(keyValue.EVICTION_APT_NUM) ? new SqlParameter("EVICTION_APT_NUM", keyValue.EVICTION_APT_NUM) : new SqlParameter("EVICTION_APT_NUM", DBNull.Value);
+                            var EXECUTED_DATEParametar = keyValue.EXECUTED_DATE.HasValue ? new SqlParameter("EXECUTED_DATE", keyValue.EXECUTED_DATE) : new SqlParameter("EXECUTED_DATE", DBNull.Value);
+                            var MARSHAL_FIRST_NAMEParametar = !String.IsNullOrEmpty(keyValue.MARSHAL_FIRST_NAME) ? new SqlParameter("MARSHAL_FIRST_NAME", keyValue.MARSHAL_FIRST_NAME) : new SqlParameter("MARSHAL_FIRST_NAME", DBNull.Value);
+                            var MARSHAL_LAST_NAMEParametar = !String.IsNullOrEmpty(keyValue.MARSHAL_LAST_NAME) ? new SqlParameter("MARSHAL_LAST_NAME", keyValue.MARSHAL_LAST_NAME) : new SqlParameter("MARSHAL_LAST_NAME", DBNull.Value);
+                            var RESIDENTIAL_COMMERCIAL_INDParametar = !String.IsNullOrEmpty(keyValue.RESIDENTIAL_COMMERCIAL_IND) ? new SqlParameter("RESIDENTIAL_COMMERCIAL_IND", keyValue.RESIDENTIAL_COMMERCIAL_IND) : new SqlParameter("RESIDENTIAL_COMMERCIAL_IND", DBNull.Value);
+                            var BOROUGHParametar = !String.IsNullOrEmpty(keyValue.BOROUGH) ? new SqlParameter("BOROUGH", keyValue.BOROUGH) : new SqlParameter("BOROUGH", DBNull.Value);
+                            var EVICTION_ZIPParametar = !String.IsNullOrEmpty(keyValue.EVICTION_ZIP) ? new SqlParameter("EVICTION_ZIP", keyValue.EVICTION_ZIP) : new SqlParameter("EVICTION_ZIP", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertEviction @COURT_INDEX_NUMBER, @DOCKET_NUMBER, @EVICTION_ADDRESS, @EVICTION_APT_NUM, @EXECUTED_DATE, @MARSHAL_FIRST_NAME, @MARSHAL_LAST_NAME, @RESIDENTIAL_COMMERCIAL_IND, @BOROUGH, @EVICTION_ZIP ",
+                                COURT_INDEX_NUMBERParametar, DOCKET_NUMBERParametar, EVICTION_ADDRESSParametar, EVICTION_APT_NUMParametar, EXECUTED_DATEParametar,
+                                MARSHAL_FIRST_NAMEParametar, MARSHAL_LAST_NAMEParametar, RESIDENTIAL_COMMERCIAL_INDParametar, BOROUGHParametar, EVICTION_ZIPParametar);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
+        public void InsertAllViolations(string issue_date)
         {
             var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
 
@@ -259,7 +367,19 @@ namespace NYC_REI_Console.DataAccessLayer
             int myOffset = 0;
             while (true)
             {
-                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                if (!String.IsNullOrEmpty(issue_date))
+                {
+                    var strDate = issue_date.Substring(0, 4) + "-" + issue_date.Substring(6, 2) + "-" + issue_date.Substring(4, 2);
+                    var soql = new SoqlQuery()
+                          .Where("issue_date > '" + strDate + "' AND issue_date LIKE '20%'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataViolations>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
                 if (rows.Count() == 0)
                 {
                     break;
@@ -305,74 +425,135 @@ namespace NYC_REI_Console.DataAccessLayer
                 myOffset += myLimit;
             }
         }
-        public void InsertAllPermits()
+        public DatabaseMaxValues GetMaxValues()
         {
-            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
-
-            // Get a reference to the resource itself
-            // The result (a Resouce object) is a generic type
-            // The type parameter represents the underlying rows of the resource
-            // and can be any JSON-serializable class
-            var dataset = client.GetResource<SocrataPermits>(GlobalVariables.PermitID);
-
-            IEnumerable<SocrataPermits> rows;
-            int myLimit = 5000;
-            int myOffset = 0;
-            while (true)
+            DatabaseMaxValues result = new DatabaseMaxValues();
+            using (var ctx = new NYC_Web_Mapping_AppEntities())
             {
-                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
-                if (rows.Count() == 0)
+                result = ctx.Database.SqlQuery<DatabaseMaxValues>("EXEC dbo.GetMaxValues ").FirstOrDefault();
+            }
+            return result;
+        }
+        public void CheckAlerts(int? maxOBJECTID)
+        {
+            List<MyAlert> lstAlerts = db.MyAlerts.Where(w => DbFunctions.TruncateTime(w.Next_DateCheck.Value) == DbFunctions.TruncateTime(DateTime.Now)).ToList();
+            foreach (MyAlert alert in lstAlerts)
+            {
+                string sqlQuery = alert.AlertQuery;
+                string formatedDate = alert.Last_DateCheck.Value.ToString("yyyy'-'MM'-'dd");
+                string formatedViolationDate = alert.Last_DateCheck.Value.ToString("yyyyMMdd");
+                sqlQuery += " AND (";
+                if (alert.Last_OBJECTID.HasValue)
                 {
-                    break;
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " p.OBJECTID > " + alert.Last_OBJECTID.Value;
+                    }
+                    else
+                    {
+                        sqlQuery += " OR p.OBJECTID > " + alert.Last_OBJECTID.Value;
+                    }
+                    if (maxOBJECTID > alert.Last_OBJECTID.Value)
+                    {
+                        alert.Last_OBJECTID = maxOBJECTID;
+                    }
+                }
+                if (alert.IsEnergySearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " en.generation_date > '" + formatedDate + "'";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR en.generation_date > '" + formatedDate + "'";
+                    }
+                }
+                if (alert.IsPermitSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " pe.dobrundate > '" + formatedDate + "'";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR pe.dobrundate > '" + formatedDate + "'";
+                    }
+                }
+                if (alert.IsViolationSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " (v.issue_date > '" + formatedViolationDate + "' AND v.issue_date LIKE '20%')";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR (v.issue_date > '" + formatedDate + "' AND v.issue_date LIKE '20%')";
+                    }
+                }
+                if (alert.IsEvictionSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " (ev.EXECUTED_DATE > '" + formatedDate + "' AND ev.EXECUTED_DATE < '2030-01-01')";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR (ev.EXECUTED_DATE > '" + formatedDate + "' AND ev.EXECUTED_DATE < '2030-01-01')";
+                    }
+                }
+                sqlQuery += ")";
+                List<DatabaseAttributes> newSearch = SearchDatabase(sqlQuery);
+                if (newSearch.Count > 0)
+                {
+                    alert.IsUnread = true;
+                    SendMail(alert.Username);
                 }
                 else
                 {
-                    foreach (var keyValue in rows)
-                    {
-                        var boroNum = "";
-                        switch (keyValue.borough)
-                        {
-                            case "MANHATTAN":
-                                boroNum = "1"; break;
-                            case "BRONX":
-                                boroNum = "2"; break;
-                            case "BROOKLYN":
-                                boroNum = "3"; break;
-                            case "QUEENS":
-                                boroNum = "4"; break;
-                            case "STATEN ISLAND":
-                                boroNum = "5"; break;
-                            default:
-                                return;
-                        }
-                        string bbl_10_digits = "";
-                        if (!String.IsNullOrEmpty(boroNum) && !String.IsNullOrEmpty(keyValue.block) && !String.IsNullOrEmpty(keyValue.lot))
-                        {
-                            bbl_10_digits = boroNum + keyValue.block + keyValue.lot.Substring(1);
-                        }
-                        using (var ctx = new NYC_Web_Mapping_AppEntities())
-                        {
-                            bool validDate = false;
-                            if(keyValue.job_start_date.HasValue && keyValue.job_start_date > new DateTime(1753, 1, 1) && keyValue.job_start_date < new DateTime(9999, 1, 1))
-                            {
-                                validDate = true;
-                            }
-                            var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
-                            var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
-                            var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
-                            var job_start_dateParametar = validDate ? new SqlParameter("job_start_date", keyValue.job_start_date) : new SqlParameter("job_start_date", DBNull.Value);
-                            var job_typeParametar = !String.IsNullOrEmpty(keyValue.job_type) ? new SqlParameter("job_type", keyValue.job_type) : new SqlParameter("job_type", DBNull.Value);
-                            var work_typeParametar = !String.IsNullOrEmpty(keyValue.work_type) ? new SqlParameter("work_type", keyValue.work_type) : new SqlParameter("work_type", DBNull.Value);
-                            var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
-                            var dobrundateParametar = keyValue.dobrundate.HasValue ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
-
-                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate ",
-                                boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar);
-                        }
-                    }
+                    alert.IsUnread = false;
                 }
-                myOffset += myLimit;
+                alert.Last_DateCheck = DateTime.Now;
+                alert.Next_DateCheck = DateTime.Now.AddDays(alert.Frequency);
+                db.Entry(alert).State = EntityState.Modified;
+                db.SaveChanges();
             }
+        }
+        public List<DatabaseAttributes> SearchDatabase(string sqlQuery)
+        {
+            List<DatabaseAttributes> returnResult = new List<DatabaseAttributes>();
+            using (var ctx = new NYC_Web_Mapping_AppEntities())
+            {
+                returnResult = ctx.Database.SqlQuery<DatabaseAttributes>(sqlQuery).ToList();
+            }
+            return returnResult;
+        }
+        public bool SendMail(string userEmail)
+        {
+            string subject = "You have new alert in NYC REI application";
+            string body = "<p>Visit <a href='http://13.92.226.170:3000/'>NYC REI application</a> and see new data based on your created alert</p>";
+            try
+            {
+                MailAddress from = new MailAddress(Properties.EmailSender, "NYC REI");
+                MailAddress to = new MailAddress(userEmail);
+                MailMessage mailMessage = new MailMessage(from, to);
+                mailMessage.Subject = subject;
+                mailMessage.Body = body;
+                mailMessage.IsBodyHtml = true;
+                new SmtpClient
+                {
+                    Host = Properties.SMTPClient,
+                    Port = Convert.ToInt32(Properties.SMTPPort),
+                    EnableSsl = true,
+                    Credentials = new NetworkCredential(Properties.EmailSender, Properties.Password)
+                }.Send(mailMessage);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
