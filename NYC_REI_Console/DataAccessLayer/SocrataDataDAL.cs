@@ -430,6 +430,7 @@ namespace NYC_REI_Console.DataAccessLayer
             DatabaseMaxValues result = new DatabaseMaxValues();
             using (var ctx = new NYC_Web_Mapping_AppEntities())
             {
+                ctx.Database.CommandTimeout = 600;
                 result = ctx.Database.SqlQuery<DatabaseMaxValues>("EXEC dbo.GetMaxValues ").FirstOrDefault();
             }
             return result;
