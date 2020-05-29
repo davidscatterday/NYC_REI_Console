@@ -369,7 +369,7 @@ namespace NYC_REI_Console.DataAccessLayer
             {
                 if (!String.IsNullOrEmpty(issue_date))
                 {
-                    var strDate = issue_date.Substring(0, 4) + "-" + issue_date.Substring(6, 2) + "-" + issue_date.Substring(4, 2);
+                    var strDate = issue_date.Substring(0, 4) + "-" + issue_date.Substring(4, 2) + "-" + issue_date.Substring(6, 2);
                     var soql = new SoqlQuery()
                           .Where("issue_date > '" + strDate + "' AND issue_date LIKE '20%'")
                           .Limit(myLimit)
