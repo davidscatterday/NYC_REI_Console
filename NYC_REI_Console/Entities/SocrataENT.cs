@@ -157,6 +157,7 @@ namespace NYC_REI_Console.Entities
         public int? YearBuilt { get; set; }
         public string OwnerName { get; set; }
         public string BldgClass { get; set; }
+        public int? CD { get; set; }
     }
     public class DatabaseAttributes
     {

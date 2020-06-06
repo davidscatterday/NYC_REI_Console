@@ -35,7 +35,7 @@ namespace NYC_REI_Console.DataAccessLayer
                     string whereClaues = "objectid >= " + ObjectIDmin + " AND objectid < " + ObjectIDmax;
                     ObjectIDmin = ObjectIDmax;
                     ObjectIDmax += step;
-                    string urlPost = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/MAPPLUTO/FeatureServer/0/query?where=" + whereClaues + "&f=pjson&returnGeometry=false&outFields=OBJECTID,BBL,Borough,Address,ZipCode,Latitude,Longitude,BldgArea,ComArea,ResArea,NumFloors,UnitsRes,ZoneDist1,Overlay1,Overlay2,AssessTot,YearBuilt,OwnerName,BldgClass";
+                    string urlPost = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/MAPPLUTO/FeatureServer/0/query?where=" + whereClaues + "&f=pjson&returnGeometry=false&outFields=OBJECTID,BBL,Borough,Address,ZipCode,Latitude,Longitude,BldgArea,ComArea,ResArea,NumFloors,UnitsRes,ZoneDist1,Overlay1,Overlay2,AssessTot,YearBuilt,OwnerName,BldgClass,CD";
                     var json = client.DownloadString(urlPost);
 
                     data = serializer.Deserialize<JsonMapPlutoData>(json);
@@ -69,11 +69,15 @@ namespace NYC_REI_Console.DataAccessLayer
                                 var YearBuiltParametar = tf.attributes.YearBuilt.HasValue ? new SqlParameter("YearBuilt", tf.attributes.YearBuilt) : new SqlParameter("YearBuilt", DBNull.Value);
                                 var OwnerNameParametar = !String.IsNullOrEmpty(tf.attributes.OwnerName) ? new SqlParameter("OwnerName", tf.attributes.OwnerName) : new SqlParameter("OwnerName", DBNull.Value);
                                 var BldgClassParametar = !String.IsNullOrEmpty(tf.attributes.BldgClass) ? new SqlParameter("BldgClass", tf.attributes.BldgClass) : new SqlParameter("BldgClass", DBNull.Value);
+                                var CDParametar = tf.attributes.CD.HasValue ? new SqlParameter("CD", tf.attributes.CD) : new SqlParameter("CD", DBNull.Value);
 
-                                ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertMapPluto @OBJECTID, @BBL, @Borough, @Address, @ZipCode, @Latitude, @Longitude, @BldgArea, @ComArea, @ResArea, @NumFloors, @UnitsRes, @ZoneDist1, @Overlay1, @Overlay2, @AssessTot, @YearBuilt, @OwnerName, @BldgClass ",
-                                    OBJECTIDParametar, BBLParametar, BoroughParametar, AddressParametar, ZipCodeParametar, LatitudeParametar, LongitudeParametar
-                                    , BldgAreaParametar, ComAreaParametar, ResAreaParametar, NumFloorsParametar, UnitsResParametar, ZoneDist1Parametar, Overlay1Parametar
-                                    , Overlay2Parametar, AssessTotParametar, YearBuiltParametar, OwnerNameParametar, BldgClassParametar);
+                                //ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertMapPluto @OBJECTID, @BBL, @Borough, @Address, @ZipCode, @Latitude, @Longitude, @BldgArea, @ComArea, @ResArea, @NumFloors, @UnitsRes, @ZoneDist1, @Overlay1, @Overlay2, @AssessTot, @YearBuilt, @OwnerName, @BldgClass, @CD ",
+                                //    OBJECTIDParametar, BBLParametar, BoroughParametar, AddressParametar, ZipCodeParametar, LatitudeParametar, LongitudeParametar
+                                //    , BldgAreaParametar, ComAreaParametar, ResAreaParametar, NumFloorsParametar, UnitsResParametar, ZoneDist1Parametar, Overlay1Parametar
+                                //    , Overlay2Parametar, AssessTotParametar, YearBuiltParametar, OwnerNameParametar, BldgClassParametar, CDParametar);
+
+                                ctx.Database.ExecuteSqlCommand("EXEC dbo.UpdateMapPluto @OBJECTID, @CD ",
+                                    OBJECTIDParametar, CDParametar);
                             }
                         }
                     }
