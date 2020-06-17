@@ -13,6 +13,7 @@ namespace NYC_REI_Console.Entities
         public DateTime? dobrundate { get; set; }
         public string issue_date { get; set; }
         public DateTime? EXECUTED_DATE { get; set; }
+        public int? DistrictOBJECTID { get; set; }
     }
     class SocrataEnergy
     {
@@ -235,5 +236,19 @@ namespace NYC_REI_Console.Entities
         public const string Password = "Delagarza1!";
         public const string SMTPClient = "smtp.gmail.com";
         public const string SMTPPort = "587";
+    }
+    class JsonDistrictData
+    {
+        public List<TableFieldsDistrict> features { get; set; }
+    }
+    class TableFieldsDistrict
+    {
+        public DistrictAttributes attributes { get; set; }
+    }
+    class DistrictAttributes
+    {
+        public int OBJECTID { get; set; }
+        public int DISTRICTCODE { get; set; }
+        public string DISTRICT { get; set; }
     }
 }

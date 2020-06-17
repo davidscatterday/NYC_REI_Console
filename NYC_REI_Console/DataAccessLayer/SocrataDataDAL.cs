@@ -19,7 +19,7 @@ namespace NYC_REI_Console.DataAccessLayer
     {
         private NYC_Web_Mapping_AppEntities db = new NYC_Web_Mapping_AppEntities();
 
-        public void GetAllMapPluto(int? OBJECTID)
+        public void InsertAllMapPluto(int? OBJECTID)
         {
             int minObjectID = OBJECTID.HasValue ? OBJECTID.Value + 1 : 0;
             JsonMapPlutoData data = new JsonMapPlutoData();
@@ -71,13 +71,13 @@ namespace NYC_REI_Console.DataAccessLayer
                                 var BldgClassParametar = !String.IsNullOrEmpty(tf.attributes.BldgClass) ? new SqlParameter("BldgClass", tf.attributes.BldgClass) : new SqlParameter("BldgClass", DBNull.Value);
                                 var CDParametar = tf.attributes.CD.HasValue ? new SqlParameter("CD", tf.attributes.CD) : new SqlParameter("CD", DBNull.Value);
 
-                                //ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertMapPluto @OBJECTID, @BBL, @Borough, @Address, @ZipCode, @Latitude, @Longitude, @BldgArea, @ComArea, @ResArea, @NumFloors, @UnitsRes, @ZoneDist1, @Overlay1, @Overlay2, @AssessTot, @YearBuilt, @OwnerName, @BldgClass, @CD ",
-                                //    OBJECTIDParametar, BBLParametar, BoroughParametar, AddressParametar, ZipCodeParametar, LatitudeParametar, LongitudeParametar
-                                //    , BldgAreaParametar, ComAreaParametar, ResAreaParametar, NumFloorsParametar, UnitsResParametar, ZoneDist1Parametar, Overlay1Parametar
-                                //    , Overlay2Parametar, AssessTotParametar, YearBuiltParametar, OwnerNameParametar, BldgClassParametar, CDParametar);
+                                ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertMapPluto @OBJECTID, @BBL, @Borough, @Address, @ZipCode, @Latitude, @Longitude, @BldgArea, @ComArea, @ResArea, @NumFloors, @UnitsRes, @ZoneDist1, @Overlay1, @Overlay2, @AssessTot, @YearBuilt, @OwnerName, @BldgClass, @CD ",
+                                    OBJECTIDParametar, BBLParametar, BoroughParametar, AddressParametar, ZipCodeParametar, LatitudeParametar, LongitudeParametar
+                                    , BldgAreaParametar, ComAreaParametar, ResAreaParametar, NumFloorsParametar, UnitsResParametar, ZoneDist1Parametar, Overlay1Parametar
+                                    , Overlay2Parametar, AssessTotParametar, YearBuiltParametar, OwnerNameParametar, BldgClassParametar, CDParametar);
 
-                                ctx.Database.ExecuteSqlCommand("EXEC dbo.UpdateMapPluto @OBJECTID, @CD ",
-                                    OBJECTIDParametar, CDParametar);
+                                //ctx.Database.ExecuteSqlCommand("EXEC dbo.UpdateMapPluto @OBJECTID, @CD ",
+                                //    OBJECTIDParametar, CDParametar);
                             }
                         }
                     }
@@ -427,6 +427,49 @@ namespace NYC_REI_Console.DataAccessLayer
                     }
                 }
                 myOffset += myLimit;
+            }
+        }
+        public void InsertAllDistricts(int? DistrictOBJECTID)
+        {
+            int minObjectID = DistrictOBJECTID.HasValue ? DistrictOBJECTID.Value + 1 : 0;
+            JsonDistrictData data = new JsonDistrictData();
+            var serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = Int32.MaxValue;
+            int step = 100;
+            int ObjectIDmin = minObjectID + 1;
+            int ObjectIDmax = step + minObjectID + 1;
+            while (true)
+            {
+                using (var client = new WebClient())
+                {
+                    string whereClaues = "objectid >= " + ObjectIDmin + " AND objectid < " + ObjectIDmax;
+                    ObjectIDmin = ObjectIDmax;
+                    ObjectIDmax += step;
+                    string urlPost = "https://services.arcgis.com/uKN48PkxmWiqJM9q/ArcGIS/rest/services/DSNY_Districts_OFFICIAL/FeatureServer/0/query?where=" + whereClaues + "&f=pjson&returnGeometry=false&outFields=*";
+                    var json = client.DownloadString(urlPost);
+
+                    data = serializer.Deserialize<JsonDistrictData>(json);
+
+                    if (data.features.Count() == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        foreach (TableFieldsDistrict tf in data.features)
+                        {
+                            using (var ctx = new NYC_Web_Mapping_AppEntities())
+                            {
+                                var OBJECTIDParametar = new SqlParameter("OBJECTID", tf.attributes.OBJECTID);
+                                var DISTRICTCODEParametar = new SqlParameter("DISTRICTCODE", tf.attributes.DISTRICTCODE);
+                                var DISTRICTParametar = !String.IsNullOrEmpty(tf.attributes.DISTRICT) ? new SqlParameter("DISTRICT", tf.attributes.DISTRICT) : new SqlParameter("DISTRICT", DBNull.Value);
+                                
+                                ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertDistrict @OBJECTID, @DISTRICTCODE, @DISTRICT ",
+                                    OBJECTIDParametar, DISTRICTCODEParametar, DISTRICTParametar);
+                            }
+                        }
+                    }
+                }
             }
         }
         public DatabaseMaxValues GetMaxValues()

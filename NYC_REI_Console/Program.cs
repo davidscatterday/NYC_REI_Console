@@ -13,14 +13,14 @@ namespace NYC_REI_Console
         static void Main(string[] args)
         {
             SocrataDataDAL socrataDataDAL = new SocrataDataDAL();
-            //DatabaseMaxValues result = socrataDataDAL.GetMaxValues();
-            //socrataDataDAL.GetAllMapPluto(result.OBJECTID);
-            //socrataDataDAL.InsertAllEnergy(result.generation_date);
-            //socrataDataDAL.InsertAllPermits(result.dobrundate);
-            //socrataDataDAL.InsertAllViolations(result.issue_date);
-            //socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
-            //socrataDataDAL.CheckAlerts(result.OBJECTID);
-            socrataDataDAL.GetAllMapPluto(null);
+            DatabaseMaxValues result = socrataDataDAL.GetMaxValues();
+            socrataDataDAL.InsertAllMapPluto(result.OBJECTID);
+            socrataDataDAL.InsertAllEnergy(result.generation_date);
+            socrataDataDAL.InsertAllPermits(result.dobrundate);
+            socrataDataDAL.InsertAllViolations(result.issue_date);
+            socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
+            socrataDataDAL.InsertAllDistricts(result.DistrictOBJECTID);
+            socrataDataDAL.CheckAlerts(result.OBJECTID);
         }
     }
 }
