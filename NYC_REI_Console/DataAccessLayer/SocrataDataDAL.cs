@@ -21,7 +21,7 @@ namespace NYC_REI_Console.DataAccessLayer
 
         public void InsertAllMapPluto(int? OBJECTID)
         {
-            int minObjectID = OBJECTID.HasValue ? OBJECTID.Value + 1 : 0;
+            int minObjectID = OBJECTID.HasValue ? OBJECTID.Value : 0;
             JsonMapPlutoData data = new JsonMapPlutoData();
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Int32.MaxValue;
