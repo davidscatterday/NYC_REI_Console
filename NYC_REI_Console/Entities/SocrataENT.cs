@@ -233,7 +233,7 @@ namespace NYC_REI_Console.Entities
     public static class Properties
     {
         public const string EmailSender = "nyc.rei.dev@gmail.com";
-        public const string Password = "Delagarza1!";
+        public const string Password = "Delagarza1!!";
         public const string SMTPClient = "smtp.gmail.com";
         public const string SMTPPort = "587";
     }
