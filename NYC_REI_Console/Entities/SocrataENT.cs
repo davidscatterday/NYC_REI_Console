@@ -14,6 +14,7 @@ namespace NYC_REI_Console.Entities
         public string issue_date { get; set; }
         public DateTime? EXECUTED_DATE { get; set; }
         public int? DistrictOBJECTID { get; set; }
+        public DateTime? filing_date { get; set; }
     }
     class SocrataEnergy
     {
@@ -129,6 +130,30 @@ namespace NYC_REI_Console.Entities
         public string BOROUGH { get; set; }
         public string EVICTION_ZIP { get; set; }
     }
+    class SocrataElevators
+    {
+        public string job_filing_number { get; set; }
+        public string job_number { get; set; }
+        public string filing_number { get; set; }
+        public DateTime? filing_date { get; set; }
+        public string filing_type { get; set; }
+        public string elevatordevicetype { get; set; }
+        public string filing_status { get; set; }
+        public string filingstatus_or_filingincludes { get; set; }
+        public string building_code { get; set; }
+        public string electrical_permit_number { get; set; }
+        public string bin { get; set; }
+        public string house_number { get; set; }
+        public string street_name { get; set; }
+        public string zip { get; set; }
+        public string borough { get; set; }
+        public string block { get; set; }
+        public string lot { get; set; }
+        public string building_type { get; set; }
+        public string buildingstories { get; set; }
+        public string bbl { get; set; }
+
+}
     class JsonMapPlutoData
     {
         public List<TableFieldsMapPluto> features { get; set; }

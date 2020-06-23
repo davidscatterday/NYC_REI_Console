@@ -13,5 +13,6 @@ namespace NYC_REI_Console.Helpers
         public const string PermitID = "ipu4-2q9a";
         public const string ViolationID = "3h2n-5cm9";
         public const string EvictionID = "6z8x-wfk4";
+        public const string ElevatorID = "kfp4-dz4h";
     }
 }

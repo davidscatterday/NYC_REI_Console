@@ -472,6 +472,75 @@ namespace NYC_REI_Console.DataAccessLayer
                 }
             }
         }
+        public void InsertAllElevators(DateTime? filing_date)
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<SocrataElevators>(GlobalVariables.ElevatorID);
+
+            IEnumerable<SocrataElevators> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                if (filing_date.HasValue)
+                {
+                    var strDate = filing_date.Value.Year + "-" + filing_date.Value.Month + "-" + filing_date.Value.Day;
+                    var soql = new SoqlQuery()
+                          .Where("filing_date > '" + strDate + "'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataElevators>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+                        
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+
+                            var job_filing_numberParameter = !String.IsNullOrEmpty(keyValue.job_filing_number) ? new SqlParameter("job_filing_number", keyValue.job_filing_number) : new SqlParameter("job_filing_number", DBNull.Value);
+                            var job_numberParameter = !String.IsNullOrEmpty(keyValue.job_number) ? new SqlParameter("job_number", keyValue.job_number) : new SqlParameter("job_number", DBNull.Value);
+                            var filing_numberParameter = !String.IsNullOrEmpty(keyValue.filing_number) ? new SqlParameter("filing_number", keyValue.filing_number) : new SqlParameter("filing_number", DBNull.Value);
+                            var filing_dateParameter = keyValue.filing_date.HasValue ? new SqlParameter("filing_date", keyValue.filing_date) : new SqlParameter("filing_date", DBNull.Value);
+                            var filing_typeParameter = !String.IsNullOrEmpty(keyValue.filing_type) ? new SqlParameter("filing_type", keyValue.filing_type) : new SqlParameter("filing_type", DBNull.Value);
+                            var elevatordevicetypeParameter = !String.IsNullOrEmpty(keyValue.elevatordevicetype) ? new SqlParameter("elevatordevicetype", keyValue.elevatordevicetype) : new SqlParameter("elevatordevicetype", DBNull.Value);
+                            var filing_statusParameter = !String.IsNullOrEmpty(keyValue.filing_status) ? new SqlParameter("filing_status", keyValue.filing_status) : new SqlParameter("filing_status", DBNull.Value);
+                            var filingstatus_or_filingincludesParameter = !String.IsNullOrEmpty(keyValue.filingstatus_or_filingincludes) ? new SqlParameter("filingstatus_or_filingincludes", keyValue.filingstatus_or_filingincludes) : new SqlParameter("filingstatus_or_filingincludes", DBNull.Value);
+                            var building_codeParameter = !String.IsNullOrEmpty(keyValue.building_code) ? new SqlParameter("building_code", keyValue.building_code) : new SqlParameter("building_code", DBNull.Value);
+                            var electrical_permit_numberParameter = !String.IsNullOrEmpty(keyValue.electrical_permit_number) ? new SqlParameter("electrical_permit_number", keyValue.electrical_permit_number) : new SqlParameter("electrical_permit_number", DBNull.Value);
+                            var binParameter = !String.IsNullOrEmpty(keyValue.bin) ? new SqlParameter("bin", keyValue.bin) : new SqlParameter("bin", DBNull.Value);
+                            var house_numberParameter = !String.IsNullOrEmpty(keyValue.house_number) ? new SqlParameter("house_number", keyValue.house_number) : new SqlParameter("house_number", DBNull.Value);
+                            var street_nameParameter = !String.IsNullOrEmpty(keyValue.street_name) ? new SqlParameter("street_name", keyValue.street_name) : new SqlParameter("street_name", DBNull.Value);
+                            var zipParameter = !String.IsNullOrEmpty(keyValue.zip) ? new SqlParameter("zip", keyValue.zip) : new SqlParameter("zip", DBNull.Value);
+                            var boroughParameter = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
+                            var blockParameter = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
+                            var lotParameter = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
+                            var building_typeParameter = !String.IsNullOrEmpty(keyValue.building_type) ? new SqlParameter("building_type", keyValue.building_type) : new SqlParameter("building_type", DBNull.Value);
+                            var buildingstoriesParameter = !String.IsNullOrEmpty(keyValue.buildingstories) ? new SqlParameter("buildingstories", keyValue.buildingstories) : new SqlParameter("buildingstories", DBNull.Value);
+                            var bblParameter = !String.IsNullOrEmpty(keyValue.bbl) ? new SqlParameter("bbl", keyValue.bbl) : new SqlParameter("bbl", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertElevator @job_filing_number, @job_number, @filing_number, @filing_date, @filing_type, @elevatordevicetype, @filing_status, @filingstatus_or_filingincludes, @building_code, @electrical_permit_number, @bin, @house_number, @street_name, @zip, @borough, @block, @lot, @building_type, @buildingstories, @bbl",
+                               job_filing_numberParameter, job_numberParameter, filing_numberParameter, filing_dateParameter, filing_typeParameter, elevatordevicetypeParameter, filing_statusParameter, filingstatus_or_filingincludesParameter, building_codeParameter, electrical_permit_numberParameter, binParameter, house_numberParameter, street_nameParameter, zipParameter, boroughParameter, blockParameter, lotParameter, building_typeParameter, buildingstoriesParameter, bblParameter );
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
         public DatabaseMaxValues GetMaxValues()
         {
             DatabaseMaxValues result = new DatabaseMaxValues();
