@@ -27,6 +27,7 @@ namespace NYC_REI_Console.Models
         public bool IsPermitSearch { get; set; }
         public bool IsViolationSearch { get; set; }
         public bool IsEvictionSearch { get; set; }
+        public bool IsElevatorSearch { get; set; }
         public bool IsUnread { get; set; }
     }
 }

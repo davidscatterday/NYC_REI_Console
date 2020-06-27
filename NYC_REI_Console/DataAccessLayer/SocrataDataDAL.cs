@@ -619,6 +619,17 @@ namespace NYC_REI_Console.DataAccessLayer
                         sqlQuery += " OR (ev.EXECUTED_DATE > '" + formatedDate + "' AND ev.EXECUTED_DATE < '2030-01-01')";
                     }
                 }
+                if (alert.IsElevatorSearch)
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " (el.filing_date > '" + formatedDate + "' AND el.filing_date < '2030-01-01')";
+                    }
+                    else
+                    {
+                        sqlQuery += " OR (el.filing_date > '" + formatedDate + "' AND el.filing_date < '2030-01-01')";
+                    }
+                }
                 sqlQuery += ")";
                 List<DatabaseAttributes> newSearch = SearchDatabase(sqlQuery);
                 if (newSearch.Count > 0)
