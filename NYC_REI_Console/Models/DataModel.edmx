@@ -22,7 +22,9 @@
           <Property Name="IsPermitSearch" Type="bit" Nullable="false" />
           <Property Name="IsViolationSearch" Type="bit" Nullable="false" />
           <Property Name="IsEvictionSearch" Type="bit" Nullable="false" />
-          <Property Name="IsUnread" Type="bit" Nullable="false" />
+          <Property Name="IsElevatorSearch" Type="bit" Nullable="false" />
+          <Property Name="IsPropertySalesSearch" Type="bit" Nullable="false" />
+          <Property Name="IsUnread" Type="bit" />
         </EntityType>
         <EntityContainer Name="NYC_Web_Mapping_AppModelStoreContainer">
           <EntitySet Name="MyAlerts" EntityType="Self.MyAlerts" Schema="dbo" store:Type="Tables" />
@@ -51,7 +53,9 @@
           <Property Name="IsPermitSearch" Type="Boolean" Nullable="false" />
           <Property Name="IsViolationSearch" Type="Boolean" Nullable="false" />
           <Property Name="IsEvictionSearch" Type="Boolean" Nullable="false" />
-          <Property Name="IsUnread" Type="Boolean" Nullable="false" />
+          <Property Name="IsElevatorSearch" Type="Boolean" Nullable="false" />
+          <Property Name="IsPropertySalesSearch" Type="Boolean" Nullable="false" />
+          <Property Name="IsUnread" Type="Boolean" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -63,6 +67,8 @@
             <EntityTypeMapping TypeName="NYC_Web_Mapping_AppModel.MyAlert">
               <MappingFragment StoreEntitySet="MyAlerts">
                 <ScalarProperty Name="IsUnread" ColumnName="IsUnread" />
+                <ScalarProperty Name="IsPropertySalesSearch" ColumnName="IsPropertySalesSearch" />
+                <ScalarProperty Name="IsElevatorSearch" ColumnName="IsElevatorSearch" />
                 <ScalarProperty Name="IsEvictionSearch" ColumnName="IsEvictionSearch" />
                 <ScalarProperty Name="IsViolationSearch" ColumnName="IsViolationSearch" />
                 <ScalarProperty Name="IsPermitSearch" ColumnName="IsPermitSearch" />

@@ -28,6 +28,7 @@ namespace NYC_REI_Console.Models
         public bool IsViolationSearch { get; set; }
         public bool IsEvictionSearch { get; set; }
         public bool IsElevatorSearch { get; set; }
-        public bool IsUnread { get; set; }
+        public bool IsPropertySalesSearch { get; set; }
+        public Nullable<bool> IsUnread { get; set; }
     }
 }
