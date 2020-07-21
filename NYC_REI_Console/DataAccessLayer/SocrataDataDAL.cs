@@ -541,6 +541,76 @@ namespace NYC_REI_Console.DataAccessLayer
                 myOffset += myLimit;
             }
         }
+        public void InsertAllPropertySales(DateTime? sale_date)
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<SocrataPropertySales>(GlobalVariables.PropertySaleID);
+
+            IEnumerable<SocrataPropertySales> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                if (sale_date.HasValue)
+                {
+                    var strDate = sale_date.Value.Year + "-" + sale_date.Value.Month + "-" + sale_date.Value.Day;
+                    var soql = new SoqlQuery()
+                          .Where("sale_date > '" + strDate + "'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataPropertySales>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            var boroughParameter = keyValue.borough.HasValue ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
+                            var neighborhoodParameter = !String.IsNullOrEmpty(keyValue.neighborhood) ? new SqlParameter("neighborhood", keyValue.neighborhood) : new SqlParameter("neighborhood", DBNull.Value);
+                            var building_class_categoryParameter = !String.IsNullOrEmpty(keyValue.building_class_category) ? new SqlParameter("building_class_category", keyValue.building_class_category) : new SqlParameter("building_class_category", DBNull.Value);
+                            var tax_class_at_presentParameter = !String.IsNullOrEmpty(keyValue.tax_class_at_present) ? new SqlParameter("tax_class_at_present", keyValue.tax_class_at_present) : new SqlParameter("tax_class_at_present", DBNull.Value);
+                            var blockParameter = keyValue.block.HasValue ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
+                            var lotParameter = keyValue.lot.HasValue ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
+                            var ease_mentParameter = !String.IsNullOrEmpty(keyValue.ease_ment) ? new SqlParameter("ease_ment", keyValue.ease_ment) : new SqlParameter("ease_ment", DBNull.Value);
+                            var building_class_at_presentParameter = !String.IsNullOrEmpty(keyValue.building_class_at_present) ? new SqlParameter("building_class_at_present", keyValue.building_class_at_present) : new SqlParameter("building_class_at_present", DBNull.Value);
+                            var addressParameter = !String.IsNullOrEmpty(keyValue.address) ? new SqlParameter("address", keyValue.address) : new SqlParameter("address", DBNull.Value);
+                            var apartment_numberParameter = !String.IsNullOrEmpty(keyValue.apartment_number) ? new SqlParameter("apartment_number", keyValue.apartment_number) : new SqlParameter("apartment_number", DBNull.Value);
+                            var zip_codeParameter = keyValue.zip_code.HasValue ? new SqlParameter("zip_code", keyValue.zip_code) : new SqlParameter("zip_code", DBNull.Value);
+                            var residential_unitsParameter = keyValue.residential_units.HasValue ? new SqlParameter("residential_units", keyValue.residential_units) : new SqlParameter("residential_units", DBNull.Value);
+                            var commercial_unitsParameter = keyValue.commercial_units.HasValue ? new SqlParameter("commercial_units", keyValue.commercial_units) : new SqlParameter("commercial_units", DBNull.Value);
+                            var total_unitsParameter = keyValue.total_units.HasValue ? new SqlParameter("total_units", keyValue.total_units) : new SqlParameter("total_units", DBNull.Value);
+                            var land_square_feetParameter = !String.IsNullOrEmpty(keyValue.land_square_feet) ? new SqlParameter("land_square_feet", keyValue.land_square_feet) : new SqlParameter("land_square_feet", DBNull.Value);
+                            var gross_square_feetParameter = keyValue.gross_square_feet.HasValue ? new SqlParameter("gross_square_feet", keyValue.gross_square_feet) : new SqlParameter("gross_square_feet", DBNull.Value);
+                            var year_builtParameter = keyValue.year_built.HasValue ? new SqlParameter("year_built", keyValue.year_built) : new SqlParameter("year_built", DBNull.Value);
+                            var tax_class_at_time_of_saleParameter = keyValue.tax_class_at_time_of_sale.HasValue ? new SqlParameter("tax_class_at_time_of_sale", keyValue.tax_class_at_time_of_sale) : new SqlParameter("tax_class_at_time_of_sale", DBNull.Value);
+                            var building_class_at_time_ofParameter = !String.IsNullOrEmpty(keyValue.building_class_at_time_of) ? new SqlParameter("building_class_at_time_of", keyValue.building_class_at_time_of) : new SqlParameter("building_class_at_time_of", DBNull.Value);
+                            var sale_priceParameter = !String.IsNullOrEmpty(keyValue.sale_price) ? new SqlParameter("sale_price", keyValue.sale_price) : new SqlParameter("sale_price", DBNull.Value);
+                            var sale_dateParameter = keyValue.sale_date.HasValue ? new SqlParameter("sale_date", keyValue.sale_date) : new SqlParameter("sale_date", DBNull.Value);
+                            var bblParameter = !String.IsNullOrEmpty(keyValue.bbl) ? new SqlParameter("bbl", keyValue.bbl) : new SqlParameter("bbl", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPropertySale @borough, @neighborhood, @building_class_category, @tax_class_at_present, @block, @lot, @ease_ment, @building_class_at_present, @address, @apartment_number, @zip_code, @residential_units, @commercial_units, @total_units, @land_square_feet, @gross_square_feet, @year_built, @tax_class_at_time_of_sale, @building_class_at_time_of, @sale_price, @sale_date, @bbl",
+                               boroughParameter, neighborhoodParameter, building_class_categoryParameter, tax_class_at_presentParameter, blockParameter, lotParameter, ease_mentParameter, building_class_at_presentParameter, addressParameter, apartment_numberParameter, zip_codeParameter, residential_unitsParameter, commercial_unitsParameter, total_unitsParameter, land_square_feetParameter, gross_square_feetParameter, year_builtParameter, tax_class_at_time_of_saleParameter, building_class_at_time_ofParameter, sale_priceParameter, sale_dateParameter, bblParameter);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
         public DatabaseMaxValues GetMaxValues()
         {
             DatabaseMaxValues result = new DatabaseMaxValues();
