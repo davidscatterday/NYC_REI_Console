@@ -23,7 +23,8 @@ namespace NYC_REI_Console
             //socrataDataDAL.InsertAllElevators(result.filing_date);
             //socrataDataDAL.InsertAllPropertySales(result.sale_date);
             //socrataDataDAL.CheckAlerts(result.OBJECTID);
-            socrataDataDAL.InsertAllConsumerProfiles(2018);
+            //socrataDataDAL.InsertAllConsumerProfiles(2018);
+            //socrataDataDAL.ReadTextFile();
         }
     }
 }
