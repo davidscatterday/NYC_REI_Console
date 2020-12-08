@@ -13,7 +13,7 @@ namespace NYC_REI_Console
         static void Main(string[] args)
         {
             SocrataDataDAL socrataDataDAL = new SocrataDataDAL();
-            //DatabaseMaxValues result = socrataDataDAL.GetMaxValues();
+            DatabaseMaxValues result = socrataDataDAL.GetMaxValues();
             //socrataDataDAL.InsertAllMapPluto(result.OBJECTID);
             //socrataDataDAL.InsertAllEnergy(result.generation_date);
             //socrataDataDAL.InsertAllPermits(result.dobrundate);
@@ -22,9 +22,12 @@ namespace NYC_REI_Console
             //socrataDataDAL.InsertAllDistricts(result.DistrictOBJECTID);
             //socrataDataDAL.InsertAllElevators(result.filing_date);
             //socrataDataDAL.InsertAllPropertySales(result.sale_date);
+            socrataDataDAL.InsertAllEcbViolations(result.ecb_issue_date);
             //socrataDataDAL.CheckAlerts(result.OBJECTID);
             //socrataDataDAL.InsertAllConsumerProfiles(2018);
             //socrataDataDAL.ReadTextFile();
+            //socrataDataDAL.DownloadAllTextFiles();
+            //socrataDataDAL.DownloadBls();
         }
     }
 }

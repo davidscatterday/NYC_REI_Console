@@ -4,6 +4,7 @@ using NYC_REI_Console.Models;
 using SODA;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.IO;
@@ -611,6 +612,88 @@ namespace NYC_REI_Console.DataAccessLayer
                 myOffset += myLimit;
             }
         }
+        public void InsertAllEcbViolations(string ecb_issue_date)
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<SocrataEcbViolations>(GlobalVariables.EcbViolationID);
+
+            IEnumerable<SocrataEcbViolations> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                if (!String.IsNullOrEmpty(ecb_issue_date))
+                {
+                    var strDate = ecb_issue_date.Substring(0, 4) + "-" + ecb_issue_date.Substring(4, 2) + "-" + ecb_issue_date.Substring(6, 2);
+                    var soql = new SoqlQuery()
+                          .Where("issue_date > '" + strDate + "' AND issue_date LIKE '20%'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataEcbViolations>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+                        string bbl_10_digits = "";
+                        if (!String.IsNullOrEmpty(keyValue.BORO) && !String.IsNullOrEmpty(keyValue.BLOCK) && !String.IsNullOrEmpty(keyValue.LOT))
+                        {
+                            string myLot = keyValue.LOT.Count() == 5 ? keyValue.LOT.Substring(1) : keyValue.LOT;
+                            bbl_10_digits = keyValue.BORO + keyValue.BLOCK + myLot;
+                        }
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            var ISN_DOB_BIS_EXTRACTParametar = !String.IsNullOrEmpty(keyValue.ISN_DOB_BIS_EXTRACT) ? new SqlParameter("ISN_DOB_BIS_EXTRACT", keyValue.ISN_DOB_BIS_EXTRACT) : new SqlParameter("ISN_DOB_BIS_EXTRACT", DBNull.Value);
+                            var ECB_VIOLATION_NUMBERParametar = !String.IsNullOrEmpty(keyValue.ECB_VIOLATION_NUMBER) ? new SqlParameter("ECB_VIOLATION_NUMBER", keyValue.ECB_VIOLATION_NUMBER) : new SqlParameter("ECB_VIOLATION_NUMBER", DBNull.Value);
+                            var ECB_VIOLATION_STATUSParametar = !String.IsNullOrEmpty(keyValue.ECB_VIOLATION_STATUS) ? new SqlParameter("ECB_VIOLATION_STATUS", keyValue.ECB_VIOLATION_STATUS) : new SqlParameter("ECB_VIOLATION_STATUS", DBNull.Value);
+                            var DOB_VIOLATION_NUMBERParametar = !String.IsNullOrEmpty(keyValue.DOB_VIOLATION_NUMBER) ? new SqlParameter("DOB_VIOLATION_NUMBER", keyValue.DOB_VIOLATION_NUMBER) : new SqlParameter("DOB_VIOLATION_NUMBER", DBNull.Value);
+                            var BINParametar = !String.IsNullOrEmpty(keyValue.BIN) ? new SqlParameter("BIN", keyValue.BIN) : new SqlParameter("BIN", DBNull.Value);
+                            var BOROParametar = !String.IsNullOrEmpty(keyValue.BORO) ? new SqlParameter("BORO", keyValue.BORO) : new SqlParameter("BORO", DBNull.Value);
+                            var BLOCKParametar = !String.IsNullOrEmpty(keyValue.BLOCK) ? new SqlParameter("BLOCK", keyValue.BLOCK) : new SqlParameter("BLOCK", DBNull.Value);
+                            var LOTParametar = !String.IsNullOrEmpty(keyValue.LOT) ? new SqlParameter("LOT", keyValue.LOT) : new SqlParameter("LOT", DBNull.Value);
+                            var HEARING_DATEParametar = !String.IsNullOrEmpty(keyValue.HEARING_DATE) ? new SqlParameter("HEARING_DATE", keyValue.HEARING_DATE) : new SqlParameter("HEARING_DATE", DBNull.Value);
+                            var HEARING_TIMEParametar = !String.IsNullOrEmpty(keyValue.HEARING_TIME) ? new SqlParameter("HEARING_TIME", keyValue.HEARING_TIME) : new SqlParameter("HEARING_TIME", DBNull.Value);
+                            var SERVED_DATEParametar = !String.IsNullOrEmpty(keyValue.SERVED_DATE) ? new SqlParameter("SERVED_DATE", keyValue.SERVED_DATE) : new SqlParameter("SERVED_DATE", DBNull.Value);
+                            var ISSUE_DATEParametar = !String.IsNullOrEmpty(keyValue.ISSUE_DATE) ? new SqlParameter("ISSUE_DATE", keyValue.ISSUE_DATE) : new SqlParameter("ISSUE_DATE", DBNull.Value);
+                            var SEVERITYParametar = !String.IsNullOrEmpty(keyValue.SEVERITY) ? new SqlParameter("SEVERITY", keyValue.SEVERITY) : new SqlParameter("SEVERITY", DBNull.Value);
+                            var VIOLATION_TYPEParametar = !String.IsNullOrEmpty(keyValue.VIOLATION_TYPE) ? new SqlParameter("VIOLATION_TYPE", keyValue.VIOLATION_TYPE) : new SqlParameter("VIOLATION_TYPE", DBNull.Value);
+                            var RESPONDENT_NAMEParametar = !String.IsNullOrEmpty(keyValue.RESPONDENT_NAME) ? new SqlParameter("RESPONDENT_NAME", keyValue.RESPONDENT_NAME) : new SqlParameter("RESPONDENT_NAME", DBNull.Value);
+                            var RESPONDENT_HOUSE_NUMBERParametar = !String.IsNullOrEmpty(keyValue.RESPONDENT_HOUSE_NUMBER) ? new SqlParameter("RESPONDENT_HOUSE_NUMBER", keyValue.RESPONDENT_HOUSE_NUMBER) : new SqlParameter("RESPONDENT_HOUSE_NUMBER", DBNull.Value);
+                            var RESPONDENT_STREETParametar = !String.IsNullOrEmpty(keyValue.RESPONDENT_STREET) ? new SqlParameter("RESPONDENT_STREET", keyValue.RESPONDENT_STREET) : new SqlParameter("RESPONDENT_STREET", DBNull.Value);
+                            var RESPONDENT_CITYParametar = !String.IsNullOrEmpty(keyValue.RESPONDENT_CITY) ? new SqlParameter("RESPONDENT_CITY", keyValue.RESPONDENT_CITY) : new SqlParameter("RESPONDENT_CITY", DBNull.Value);
+                            var RESPONDENT_ZIPParametar = !String.IsNullOrEmpty(keyValue.RESPONDENT_ZIP) ? new SqlParameter("RESPONDENT_ZIP", keyValue.RESPONDENT_ZIP) : new SqlParameter("RESPONDENT_ZIP", DBNull.Value);
+                            var VIOLATION_DESCRIPTIONParametar = !String.IsNullOrEmpty(keyValue.VIOLATION_DESCRIPTION) ? new SqlParameter("VIOLATION_DESCRIPTION", keyValue.VIOLATION_DESCRIPTION) : new SqlParameter("VIOLATION_DESCRIPTION", DBNull.Value);
+                            var PENALITY_IMPOSEDParametar = !String.IsNullOrEmpty(keyValue.PENALITY_IMPOSED) ? new SqlParameter("PENALITY_IMPOSED", keyValue.PENALITY_IMPOSED) : new SqlParameter("PENALITY_IMPOSED", DBNull.Value);
+                            var AMOUNT_PAIDParametar = !String.IsNullOrEmpty(keyValue.AMOUNT_PAID) ? new SqlParameter("AMOUNT_PAID", keyValue.AMOUNT_PAID) : new SqlParameter("AMOUNT_PAID", DBNull.Value);
+                            var BALANCE_DUEParametar = !String.IsNullOrEmpty(keyValue.BALANCE_DUE) ? new SqlParameter("BALANCE_DUE", keyValue.BALANCE_DUE) : new SqlParameter("BALANCE_DUE", DBNull.Value);
+                            var AGGRAVATED_LEVELParametar = !String.IsNullOrEmpty(keyValue.AGGRAVATED_LEVEL) ? new SqlParameter("AGGRAVATED_LEVEL", keyValue.AGGRAVATED_LEVEL) : new SqlParameter("AGGRAVATED_LEVEL", DBNull.Value);
+                            var HEARING_STATUSParametar = !String.IsNullOrEmpty(keyValue.HEARING_STATUS) ? new SqlParameter("HEARING_STATUS", keyValue.HEARING_STATUS) : new SqlParameter("HEARING_STATUS", DBNull.Value);
+                            var CERTIFICATION_STATUSParametar = !String.IsNullOrEmpty(keyValue.CERTIFICATION_STATUS) ? new SqlParameter("CERTIFICATION_STATUS", keyValue.CERTIFICATION_STATUS) : new SqlParameter("CERTIFICATION_STATUS", DBNull.Value);
+                            var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertEcbViolation @ISN_DOB_BIS_EXTRACT, @ECB_VIOLATION_NUMBER, @ECB_VIOLATION_STATUS, @DOB_VIOLATION_NUMBER, @BIN, @BORO, @BLOCK, @LOT, @HEARING_DATE, @HEARING_TIME, @SERVED_DATE, @ISSUE_DATE, @SEVERITY, @VIOLATION_TYPE, @RESPONDENT_NAME, @RESPONDENT_HOUSE_NUMBER, @RESPONDENT_STREET, @RESPONDENT_CITY, @RESPONDENT_ZIP, @VIOLATION_DESCRIPTION, @PENALITY_IMPOSED, @AMOUNT_PAID, @BALANCE_DUE, @AGGRAVATED_LEVEL, @HEARING_STATUS, @CERTIFICATION_STATUS, @bbl_10_digits ",
+                                ISN_DOB_BIS_EXTRACTParametar, ECB_VIOLATION_NUMBERParametar, ECB_VIOLATION_STATUSParametar, DOB_VIOLATION_NUMBERParametar, BINParametar, BOROParametar, BLOCKParametar, LOTParametar, HEARING_DATEParametar,
+                                HEARING_TIMEParametar, SERVED_DATEParametar, ISSUE_DATEParametar, SEVERITYParametar, VIOLATION_TYPEParametar, RESPONDENT_NAMEParametar, RESPONDENT_HOUSE_NUMBERParametar, RESPONDENT_STREETParametar, RESPONDENT_CITYParametar,
+                                RESPONDENT_ZIPParametar, VIOLATION_DESCRIPTIONParametar, PENALITY_IMPOSEDParametar, AMOUNT_PAIDParametar, BALANCE_DUEParametar, AGGRAVATED_LEVELParametar, HEARING_STATUSParametar, CERTIFICATION_STATUSParametar, bbl_10_digitsParametar);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
         public DatabaseMaxValues GetMaxValues()
         {
             DatabaseMaxValues result = new DatabaseMaxValues();
@@ -847,6 +930,89 @@ namespace NYC_REI_Console.DataAccessLayer
                     }
                 }
             }
+        }
+        public void DownloadAllTextFiles()
+        {
+            foreach (SecFiling item in db.SecFilings.Where(w => w.DateFiled.Year >= 2019))
+            {
+                int year = item.DateFiled.Year;
+                string filename = item.Filename.Substring(item.Filename.LastIndexOf('/') + 1, item.Filename.Length - item.Filename.LastIndexOf('/') - 1);
+                using (var client = new WebClient())
+                {
+                    if (!Directory.Exists("E:\\SecFillings\\" + year))
+                    {
+                        Directory.CreateDirectory("E:\\SecFillings\\" + year);
+                    }
+                    client.DownloadFile("https://www.sec.gov/Archives/" + item.Filename, "E:\\SecFillings\\" + year + "\\" + filename);
+                }
+            }
+        }
+        public void DownloadBls()
+        {
+            JsonBlsData data = new JsonBlsData();
+            var serializer = new JavaScriptSerializer();
+            using (var client = new WebClient())
+            {
+                //List<string> lstSeries = new List<string>() { "APU000070111", "CUUR0000SA0L1E", "NCU5306633300003", "EBU401KINC0000ML", "CCU010000100000P", "CEU0800000003", "WMU40000011020000004130992500", "PRS85006032", "IPUBN212___W000", "EIUCOCANMANU" };
+                List<string> lstSeries = new List<string>() { "EBU401KINC0000ML", "CCU010000100000P", "CEU0800000003", "WMU40000011020000004130992500", "PRS85006032", "IPUBN212___W000", "EIUCOCANMANU" };
+                foreach (string item in lstSeries)
+                {
+                    for (int i = 1990; i <= 2020; i++)
+                    {
+                        var values = new NameValueCollection();
+                        values.Add("seriesid", item);
+                        values.Add("startyear", i.ToString());
+                        values.Add("endyear", i.ToString());
+                        values.Add("registrationKey", GlobalVariables.BlsRegistrationKey);
+                        string urlPost = "https://api.bls.gov/publicAPI/v2/timeseries/data/";
+
+                        var response = client.UploadValues(urlPost, values);
+                        string responseString = Encoding.Default.GetString(response);
+                        data = serializer.Deserialize<JsonBlsData>(responseString);
+                        if(data.Results.series != null && data.Results.series.FirstOrDefault().data.Count > 0)
+                        {
+                            foreach (BlsData insertData in data.Results.series.FirstOrDefault().data)
+                            {
+                                using (var ctx = new NYC_Web_Mapping_AppEntities())
+                                {
+                                    var DataSeriesIDParametar = new SqlParameter("DataSeriesID", item);
+                                    var YearParametar = new SqlParameter("Year", insertData.year);
+                                    var PeriodParametar = new SqlParameter("Period", insertData.period);
+                                    var PeriodNameParametar = new SqlParameter("PeriodName", insertData.periodName);
+                                    var ValueParametar = new SqlParameter("Value", insertData.value);
+                                    ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertBlsSeries @DataSeriesID, @Year, @Period, @PeriodName, @Value ",
+                                        DataSeriesIDParametar, YearParametar, PeriodParametar, PeriodNameParametar, ValueParametar);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            ////Post request example version 2.0
+            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://api.bls.gov/publicAPI/v2/timeseries/data/");
+            //httpWebRequest.ContentType = "application/json";
+            //httpWebRequest.Method = "POST";
+            ////Using Javascript Serializer
+            //using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            //{
+            //    var jS = new JavaScriptSerializer();
+            //    List<string> lstSeries = new List<string>() { "CEU0800000003" };
+            //    var newJson = jS.Serialize(new SeriesPost()
+            //    {
+            //        seriesid = lstSeries,
+            //        startyear = "1990",
+            //        endyear = "2020",
+            //        catalog = true,
+            //        calculations = true,
+            //        annualaverage = true,
+            //        registrationKey = GlobalVariables.BlsRegistrationKey
+            //    });
+            //    //View the JSON output
+            //    System.Diagnostics.Debug.WriteLine(newJson);
+            //    streamWriter.Write(newJson);
+            //    streamWriter.Flush();
+            //    streamWriter.Close();
+            //}
         }
     }
 }

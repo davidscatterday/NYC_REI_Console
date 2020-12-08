@@ -26,5 +26,6 @@ namespace NYC_REI_Console.Models
         }
     
         public virtual DbSet<MyAlert> MyAlerts { get; set; }
+        public virtual DbSet<SecFiling> SecFilings { get; set; }
     }
 }

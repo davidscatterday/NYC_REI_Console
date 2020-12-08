@@ -26,8 +26,20 @@
           <Property Name="IsPropertySalesSearch" Type="bit" Nullable="false" />
           <Property Name="IsUnread" Type="bit" />
         </EntityType>
+        <EntityType Name="SecFilings">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CIK" Type="int" Nullable="false" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="FormType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateFiled" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Filename" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityContainer Name="NYC_Web_Mapping_AppModelStoreContainer">
           <EntitySet Name="MyAlerts" EntityType="Self.MyAlerts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SecFilings" EntityType="Self.SecFilings" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -35,6 +47,7 @@
       <Schema Namespace="NYC_Web_Mapping_AppModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="NYC_Web_Mapping_AppEntities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="MyAlerts" EntityType="NYC_Web_Mapping_AppModel.MyAlert" />
+          <EntitySet Name="SecFilings" EntityType="NYC_Web_Mapping_AppModel.SecFiling" />
         </EntityContainer>
         <EntityType Name="MyAlert">
           <Key>
@@ -56,6 +69,17 @@
           <Property Name="IsElevatorSearch" Type="Boolean" Nullable="false" />
           <Property Name="IsPropertySalesSearch" Type="Boolean" Nullable="false" />
           <Property Name="IsUnread" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="SecFiling">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CIK" Type="Int32" Nullable="false" />
+          <Property Name="CompanyName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FormType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateFiled" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Filename" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -81,6 +105,18 @@
                 <ScalarProperty Name="AlertQuery" ColumnName="AlertQuery" />
                 <ScalarProperty Name="AlertName" ColumnName="AlertName" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SecFilings">
+            <EntityTypeMapping TypeName="NYC_Web_Mapping_AppModel.SecFiling">
+              <MappingFragment StoreEntitySet="SecFilings">
+                <ScalarProperty Name="Filename" ColumnName="Filename" />
+                <ScalarProperty Name="DateFiled" ColumnName="DateFiled" />
+                <ScalarProperty Name="FormType" ColumnName="FormType" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="CIK" ColumnName="CIK" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

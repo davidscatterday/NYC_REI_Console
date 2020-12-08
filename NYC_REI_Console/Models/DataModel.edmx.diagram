@@ -6,6 +6,7 @@
     <edmx:Diagrams>
       <Diagram DiagramId="3c97d631d34e462a87017a4856c01bb0" Name="Diagram1" >
         <EntityTypeShape EntityType="NYC_Web_Mapping_AppModel.MyAlert" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="NYC_Web_Mapping_AppModel.SecFiling" Width="1.5" PointX="3.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

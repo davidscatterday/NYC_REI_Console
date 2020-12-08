@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccessLayer\SocrataDataDAL.cs" />
+    <Compile Include="Entities\BlsEntities.cs" />
     <Compile Include="Entities\SocrataENT.cs" />
     <Compile Include="Helpers\GlobalVariables.cs" />
     <Compile Include="Models\DataModel.Context.cs">
@@ -110,6 +111,9 @@
       <DependentUpon>DataModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\MyAlert.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SecFiling.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />

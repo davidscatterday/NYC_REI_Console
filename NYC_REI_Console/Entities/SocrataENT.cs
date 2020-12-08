@@ -16,6 +16,7 @@ namespace NYC_REI_Console.Entities
         public int? DistrictOBJECTID { get; set; }
         public DateTime? filing_date { get; set; }
         public DateTime? sale_date { get; set; }
+        public string ecb_issue_date { get; set; }
     }
     class SocrataEnergy
     {
@@ -179,6 +180,35 @@ namespace NYC_REI_Console.Entities
         public string sale_price { get; set; }
         public DateTime? sale_date { get; set; }
         public string bbl { get; set; }
+    }
+    class SocrataEcbViolations
+    {
+        public string ISN_DOB_BIS_EXTRACT { get; set; }
+        public string ECB_VIOLATION_NUMBER { get; set; }
+        public string ECB_VIOLATION_STATUS { get; set; }
+        public string DOB_VIOLATION_NUMBER { get; set; }
+        public string BIN { get; set; }
+        public string BORO { get; set; }
+        public string BLOCK { get; set; }
+        public string LOT { get; set; }
+        public string HEARING_DATE { get; set; }
+        public string HEARING_TIME { get; set; }
+        public string SERVED_DATE { get; set; }
+        public string ISSUE_DATE { get; set; }
+        public string SEVERITY { get; set; }
+        public string VIOLATION_TYPE { get; set; }
+        public string RESPONDENT_NAME { get; set; }
+        public string RESPONDENT_HOUSE_NUMBER { get; set; }
+        public string RESPONDENT_STREET { get; set; }
+        public string RESPONDENT_CITY { get; set; }
+        public string RESPONDENT_ZIP { get; set; }
+        public string VIOLATION_DESCRIPTION { get; set; }
+        public string PENALITY_IMPOSED { get; set; }
+        public string AMOUNT_PAID { get; set; }
+        public string BALANCE_DUE { get; set; }
+        public string AGGRAVATED_LEVEL { get; set; }
+        public string HEARING_STATUS { get; set; }
+        public string CERTIFICATION_STATUS { get; set; }
     }
     class JsonMapPlutoData
     {
