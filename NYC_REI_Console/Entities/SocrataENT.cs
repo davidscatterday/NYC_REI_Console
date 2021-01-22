@@ -210,6 +210,7 @@ namespace NYC_REI_Console.Entities
         public string HEARING_STATUS { get; set; }
         public string CERTIFICATION_STATUS { get; set; }
     }
+
     class JsonMapPlutoData
     {
         public List<TableFieldsMapPluto> features { get; set; }
@@ -241,6 +242,29 @@ namespace NYC_REI_Console.Entities
         public string BldgClass { get; set; }
         public int? CD { get; set; }
     }
+
+    class JsonMapDesignationsData
+    {
+        public List<TableFieldsMapDesignations> features { get; set; }
+    }
+    class TableFieldsMapDesignations
+    {
+        public MapDesignationsAttributes attributes { get; set; }
+    }
+    class MapDesignationsAttributes
+    {
+        public int OBJECTID { get; set; }
+        public string ENUMBER { get; set; }
+        public string CEQR_NUM { get; set; }
+        public string ULURP_NUM { get; set; }
+        public int? BOROCODE { get; set; }
+        public int? TAXBLOCK { get; set; }
+        public int? TAXLOT { get; set; }
+        public string ZONING_MAP { get; set; }
+        public string DESCRIPTION { get; set; }
+        public string BBL { get; set; }
+    }
+
     public class DatabaseAttributes
     {
         public int OBJECTID { get; set; }

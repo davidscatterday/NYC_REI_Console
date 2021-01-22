@@ -694,6 +694,57 @@ namespace NYC_REI_Console.DataAccessLayer
                 myOffset += myLimit;
             }
         }
+        public void InsertAllDesignations(int? OBJECTID)
+        {
+            int minObjectID = OBJECTID.HasValue ? OBJECTID.Value : 0;
+            JsonMapDesignationsData data = new JsonMapDesignationsData();
+            var serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = Int32.MaxValue;
+            int step = 10000;
+            int ObjectIDmin = minObjectID + 1;
+            int ObjectIDmax = step + minObjectID + 1;
+            while (true)
+            {
+                using (var client = new WebClient())
+                {
+                    string whereClaues = "objectid >= " + ObjectIDmin + " AND objectid < " + ObjectIDmax;
+                    ObjectIDmin = ObjectIDmax;
+                    ObjectIDmax += step;
+                    string urlPost = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/nyedesignations/FeatureServer/0/query?where=" + whereClaues + "&f=pjson&returnGeometry=false&outFields=*";
+                    var json = client.DownloadString(urlPost);
+
+                    data = serializer.Deserialize<JsonMapDesignationsData>(json);
+
+                    if (data.features.Count() == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        foreach (TableFieldsMapDesignations tf in data.features)
+                        {
+                            using (var ctx = new NYC_Web_Mapping_AppEntities())
+                            {
+                                var OBJECTIDParametar = new SqlParameter("OBJECTID", tf.attributes.OBJECTID);
+                                var ENUMBERParametar = !String.IsNullOrEmpty(tf.attributes.ENUMBER) ? new SqlParameter("ENUMBER", tf.attributes.ENUMBER) : new SqlParameter("ENUMBER", DBNull.Value);
+                                var CEQR_NUMParametar = !String.IsNullOrEmpty(tf.attributes.CEQR_NUM) ? new SqlParameter("CEQR_NUM", tf.attributes.CEQR_NUM) : new SqlParameter("CEQR_NUM", DBNull.Value);
+                                var ULURP_NUMParametar = !String.IsNullOrEmpty(tf.attributes.ULURP_NUM) ? new SqlParameter("ULURP_NUM", tf.attributes.ULURP_NUM) : new SqlParameter("ULURP_NUM", DBNull.Value);
+                                var BOROCODEParametar = tf.attributes.BOROCODE.HasValue ? new SqlParameter("BOROCODE", tf.attributes.BOROCODE) : new SqlParameter("BOROCODE", DBNull.Value);
+                                var TAXBLOCKParametar = tf.attributes.TAXBLOCK.HasValue ? new SqlParameter("TAXBLOCK", tf.attributes.TAXBLOCK) : new SqlParameter("TAXBLOCK", DBNull.Value);
+                                var TAXLOTParametar = tf.attributes.TAXLOT.HasValue ? new SqlParameter("TAXLOT", tf.attributes.TAXLOT) : new SqlParameter("TAXLOT", DBNull.Value);
+                                var ZONING_MAPParametar = !String.IsNullOrEmpty(tf.attributes.ZONING_MAP) ? new SqlParameter("ZONING_MAP", tf.attributes.ZONING_MAP) : new SqlParameter("ZONING_MAP", DBNull.Value);
+                                var DESCRIPTIONParametar = !String.IsNullOrEmpty(tf.attributes.DESCRIPTION) ? new SqlParameter("DESCRIPTION", tf.attributes.DESCRIPTION) : new SqlParameter("DESCRIPTION", DBNull.Value);
+                                var BBLParametar = !String.IsNullOrEmpty(tf.attributes.BBL) ? new SqlParameter("BBL", tf.attributes.BBL) : new SqlParameter("BBL", DBNull.Value);
+
+                                ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertDesignation @OBJECTID, @ENUMBER, @CEQR_NUM, @ULURP_NUM, @BOROCODE, @TAXBLOCK, @TAXLOT, @ZONING_MAP, @DESCRIPTION, @BBL ",
+                                    OBJECTIDParametar, ENUMBERParametar, CEQR_NUMParametar, ULURP_NUMParametar, BOROCODEParametar, TAXBLOCKParametar, TAXLOTParametar
+                                    , ZONING_MAPParametar, DESCRIPTIONParametar, BBLParametar);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         public DatabaseMaxValues GetMaxValues()
         {
             DatabaseMaxValues result = new DatabaseMaxValues();

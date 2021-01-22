@@ -22,8 +22,11 @@ namespace NYC_REI_Console
             //socrataDataDAL.InsertAllDistricts(result.DistrictOBJECTID);
             //socrataDataDAL.InsertAllElevators(result.filing_date);
             //socrataDataDAL.InsertAllPropertySales(result.sale_date);
-            socrataDataDAL.InsertAllEcbViolations(result.ecb_issue_date);
+            //socrataDataDAL.InsertAllEcbViolations(result.ecb_issue_date);
             //socrataDataDAL.CheckAlerts(result.OBJECTID);
+
+
+            socrataDataDAL.InsertAllDesignations(0);
             //socrataDataDAL.InsertAllConsumerProfiles(2018);
             //socrataDataDAL.ReadTextFile();
             //socrataDataDAL.DownloadAllTextFiles();
