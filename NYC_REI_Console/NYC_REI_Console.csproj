@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="DataAccessLayer\SocrataDataDAL.cs" />
     <Compile Include="Entities\BlsEntities.cs" />
+    <Compile Include="Entities\OwnerAnalysisENT.cs" />
     <Compile Include="Entities\SocrataENT.cs" />
     <Compile Include="Helpers\GlobalVariables.cs" />
     <Compile Include="Models\DataModel.Context.cs">

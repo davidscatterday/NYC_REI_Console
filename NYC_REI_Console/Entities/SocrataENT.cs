@@ -97,6 +97,11 @@ namespace NYC_REI_Console.Entities
         public string work_type { get; set; }
         public string bbl_10_digits { get; set; }
         public DateTime? dobrundate { get; set; }
+        public string job__ { get; set; }
+        public string permittee_s_first_name { get; set; }
+        public string permittee_s_last_name { get; set; }
+        public string permittee_s_business_name { get; set; }
+        public string permittee_s_license_type { get; set; }
     }
     class SocrataViolations
     {

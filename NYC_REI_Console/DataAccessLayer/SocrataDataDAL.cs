@@ -291,9 +291,14 @@ namespace NYC_REI_Console.DataAccessLayer
                             var work_typeParametar = !String.IsNullOrEmpty(keyValue.work_type) ? new SqlParameter("work_type", keyValue.work_type) : new SqlParameter("work_type", DBNull.Value);
                             var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
                             var dobrundateParametar = keyValue.dobrundate.HasValue ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
+                            var job__Parametar = !String.IsNullOrEmpty(keyValue.job__) ? new SqlParameter("job__", keyValue.job__) : new SqlParameter("job__", DBNull.Value);
+                            var permittee_s_first_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_first_name) ? new SqlParameter("permittee_s_first_name", keyValue.permittee_s_first_name) : new SqlParameter("permittee_s_first_name", DBNull.Value);
+                            var permittee_s_last_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_last_name) ? new SqlParameter("permittee_s_last_name", keyValue.permittee_s_last_name) : new SqlParameter("permittee_s_last_name", DBNull.Value);
+                            var permittee_s_business_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_business_name) ? new SqlParameter("permittee_s_business_name", keyValue.permittee_s_business_name) : new SqlParameter("permittee_s_business_name", DBNull.Value);
+                            var permittee_s_license_typeParametar = !String.IsNullOrEmpty(keyValue.permittee_s_license_type) ? new SqlParameter("permittee_s_license_type", keyValue.permittee_s_license_type) : new SqlParameter("permittee_s_license_type", DBNull.Value);
 
-                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate ",
-                                boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar);
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate, @job__, @permittee_s_first_name, @permittee_s_last_name, @permittee_s_business_name, @permittee_s_license_type ",
+                                boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar, job__Parametar, permittee_s_first_nameParametar, permittee_s_last_nameParametar, permittee_s_business_nameParametar, permittee_s_license_typeParametar);
                         }
                     }
                 }
@@ -755,6 +760,7 @@ namespace NYC_REI_Console.DataAccessLayer
             }
             return result;
         }
+
         public void CheckAlerts(int? maxOBJECTID)
         {
             List<MyAlert> lstAlerts = db.MyAlerts.Where(w => DbFunctions.TruncateTime(w.Next_DateCheck.Value) == DbFunctions.TruncateTime(DateTime.Now)).ToList();
@@ -1020,7 +1026,7 @@ namespace NYC_REI_Console.DataAccessLayer
                         var response = client.UploadValues(urlPost, values);
                         string responseString = Encoding.Default.GetString(response);
                         data = serializer.Deserialize<JsonBlsData>(responseString);
-                        if(data.Results.series != null && data.Results.series.FirstOrDefault().data.Count > 0)
+                        if (data.Results.series != null && data.Results.series.FirstOrDefault().data.Count > 0)
                         {
                             foreach (BlsData insertData in data.Results.series.FirstOrDefault().data)
                             {
@@ -1064,6 +1070,110 @@ namespace NYC_REI_Console.DataAccessLayer
             //    streamWriter.Flush();
             //    streamWriter.Close();
             //}
+        }
+
+        public void hpd_contacts_insert()
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<hpd_contacts_ent>(GlobalVariables.hpd_contacts_ID);
+
+            IEnumerable<hpd_contacts_ent> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+
+                            var RegistrationContactIDParameter = !String.IsNullOrEmpty(keyValue.RegistrationContactID) ? new SqlParameter("RegistrationContactID", keyValue.RegistrationContactID) : new SqlParameter("RegistrationContactID", DBNull.Value);
+                            var RegistrationIDParameter = !String.IsNullOrEmpty(keyValue.RegistrationID) ? new SqlParameter("RegistrationID", keyValue.RegistrationID) : new SqlParameter("RegistrationID", DBNull.Value);
+                            var TypeParameter = !String.IsNullOrEmpty(keyValue.Type) ? new SqlParameter("Type", keyValue.Type) : new SqlParameter("Type", DBNull.Value);
+                            var ContactDescriptionParameter = !String.IsNullOrEmpty(keyValue.ContactDescription) ? new SqlParameter("ContactDescription", keyValue.ContactDescription) : new SqlParameter("ContactDescription", DBNull.Value);
+                            var CorporationNameParameter = !String.IsNullOrEmpty(keyValue.CorporationName) ? new SqlParameter("CorporationName", keyValue.CorporationName) : new SqlParameter("CorporationName", DBNull.Value);
+                            var TitleParameter = !String.IsNullOrEmpty(keyValue.Title) ? new SqlParameter("Title", keyValue.Title) : new SqlParameter("Title", DBNull.Value);
+                            var FirstNameParameter = !String.IsNullOrEmpty(keyValue.FirstName) ? new SqlParameter("FirstName", keyValue.FirstName) : new SqlParameter("FirstName", DBNull.Value);
+                            var MiddleInitialParameter = !String.IsNullOrEmpty(keyValue.MiddleInitial) ? new SqlParameter("MiddleInitial", keyValue.MiddleInitial) : new SqlParameter("MiddleInitial", DBNull.Value);
+                            var LastNameParameter = !String.IsNullOrEmpty(keyValue.LastName) ? new SqlParameter("LastName", keyValue.LastName) : new SqlParameter("LastName", DBNull.Value);
+                            var BusinessHouseNumberParameter = !String.IsNullOrEmpty(keyValue.BusinessHouseNumber) ? new SqlParameter("BusinessHouseNumber", keyValue.BusinessHouseNumber) : new SqlParameter("BusinessHouseNumber", DBNull.Value);
+                            var BusinessStreetNameParameter = !String.IsNullOrEmpty(keyValue.BusinessStreetName) ? new SqlParameter("BusinessStreetName", keyValue.BusinessStreetName) : new SqlParameter("BusinessStreetName", DBNull.Value);
+                            var BusinessApartmentParameter = !String.IsNullOrEmpty(keyValue.BusinessApartment) ? new SqlParameter("BusinessApartment", keyValue.BusinessApartment) : new SqlParameter("BusinessApartment", DBNull.Value);
+                            var BusinessCityParameter = !String.IsNullOrEmpty(keyValue.BusinessCity) ? new SqlParameter("BusinessCity", keyValue.BusinessCity) : new SqlParameter("BusinessCity", DBNull.Value);
+                            var BusinessStateParameter = !String.IsNullOrEmpty(keyValue.BusinessState) ? new SqlParameter("BusinessState", keyValue.BusinessState) : new SqlParameter("BusinessState", DBNull.Value);
+                            var BusinessZipParameter = !String.IsNullOrEmpty(keyValue.BusinessZip) ? new SqlParameter("BusinessZip", keyValue.BusinessZip) : new SqlParameter("BusinessZip", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.hpd_contacts_insert @RegistrationContactID, @RegistrationID, @Type, @ContactDescription, @CorporationName, @Title, @FirstName, @MiddleInitial, @LastName, @BusinessHouseNumber, @BusinessStreetName, @BusinessApartment, @BusinessCity, @BusinessState, @BusinessZip",
+                               RegistrationContactIDParameter, RegistrationIDParameter, TypeParameter, ContactDescriptionParameter, CorporationNameParameter, TitleParameter, FirstNameParameter, MiddleInitialParameter, LastNameParameter, BusinessHouseNumberParameter, BusinessStreetNameParameter, BusinessApartmentParameter, BusinessCityParameter, BusinessStateParameter, BusinessZipParameter);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
+        public void hpd_registrations_insert()
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<hpd_registrations_ent>(GlobalVariables.hpd_registrations_ID);
+
+            IEnumerable<hpd_registrations_ent> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            var RegistrationIDParameter = !String.IsNullOrEmpty(keyValue.RegistrationID) ? new SqlParameter("RegistrationID", keyValue.RegistrationID) : new SqlParameter("RegistrationID", DBNull.Value);
+                            var BuildingIDParameter = !String.IsNullOrEmpty(keyValue.BuildingID) ? new SqlParameter("BuildingID", keyValue.BuildingID) : new SqlParameter("BuildingID", DBNull.Value);
+                            var BoroIDParameter = !String.IsNullOrEmpty(keyValue.BoroID) ? new SqlParameter("BoroID", keyValue.BoroID) : new SqlParameter("BoroID", DBNull.Value);
+                            var BoroParameter = !String.IsNullOrEmpty(keyValue.Boro) ? new SqlParameter("Boro", keyValue.Boro) : new SqlParameter("Boro", DBNull.Value);
+                            var HouseNumberParameter = !String.IsNullOrEmpty(keyValue.HouseNumber) ? new SqlParameter("HouseNumber", keyValue.HouseNumber) : new SqlParameter("HouseNumber", DBNull.Value);
+                            var LowHouseNumberParameter = !String.IsNullOrEmpty(keyValue.LowHouseNumber) ? new SqlParameter("LowHouseNumber", keyValue.LowHouseNumber) : new SqlParameter("LowHouseNumber", DBNull.Value);
+                            var HighHouseNumberParameter = !String.IsNullOrEmpty(keyValue.HighHouseNumber) ? new SqlParameter("HighHouseNumber", keyValue.HighHouseNumber) : new SqlParameter("HighHouseNumber", DBNull.Value);
+                            var StreetNameParameter = !String.IsNullOrEmpty(keyValue.StreetName) ? new SqlParameter("StreetName", keyValue.StreetName) : new SqlParameter("StreetName", DBNull.Value);
+                            var ZipParameter = !String.IsNullOrEmpty(keyValue.Zip) ? new SqlParameter("Zip", keyValue.Zip) : new SqlParameter("Zip", DBNull.Value);
+                            var BlockParameter = keyValue.Block.HasValue ? new SqlParameter("Block", keyValue.Block) : new SqlParameter("Block", DBNull.Value);
+                            var LotParameter = keyValue.Lot.HasValue ? new SqlParameter("Lot", keyValue.Lot) : new SqlParameter("Lot", DBNull.Value);
+                            var BINParameter = keyValue.BIN.HasValue ? new SqlParameter("BIN", keyValue.BIN) : new SqlParameter("BIN", DBNull.Value);
+                            var CommunityBoardParameter = keyValue.CommunityBoard.HasValue ? new SqlParameter("CommunityBoard", keyValue.CommunityBoard) : new SqlParameter("CommunityBoard", DBNull.Value);
+                            var LastRegistrationDateParameter = keyValue.LastRegistrationDate.HasValue ? new SqlParameter("LastRegistrationDate", keyValue.LastRegistrationDate) : new SqlParameter("LastRegistrationDate", DBNull.Value);
+                            var RegistrationEndDateParameter = keyValue.RegistrationEndDate.HasValue ? new SqlParameter("RegistrationEndDate", keyValue.RegistrationEndDate) : new SqlParameter("RegistrationEndDate", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.hpd_registrations_insert @RegistrationID, @BuildingID, @BoroID, @Boro, @HouseNumber, @LowHouseNumber, @HighHouseNumber, @StreetName, @Zip, @Block, @Lot, @BIN, @CommunityBoard, @LastRegistrationDate, @RegistrationEndDate",
+                               RegistrationIDParameter, BuildingIDParameter, BoroIDParameter, BoroParameter, HouseNumberParameter, LowHouseNumberParameter, HighHouseNumberParameter, StreetNameParameter, ZipParameter, BlockParameter, LotParameter, BINParameter, CommunityBoardParameter, LastRegistrationDateParameter, RegistrationEndDateParameter);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
         }
     }
 }
