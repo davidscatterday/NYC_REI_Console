@@ -13,17 +13,17 @@ namespace NYC_REI_Console
         static void Main(string[] args)
         {
             SocrataDataDAL socrataDataDAL = new SocrataDataDAL();
-            //DatabaseMaxValues result = socrataDataDAL.GetMaxValues();
-            //socrataDataDAL.InsertAllMapPluto(result.OBJECTID);
-            //socrataDataDAL.InsertAllEnergy(result.generation_date);
-            //socrataDataDAL.InsertAllPermits(result.dobrundate);
-            //socrataDataDAL.InsertAllViolations(result.issue_date);
-            //socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
-            //socrataDataDAL.InsertAllDistricts(result.DistrictOBJECTID);
-            //socrataDataDAL.InsertAllElevators(result.filing_date);
-            //socrataDataDAL.InsertAllPropertySales(result.sale_date);
-            //socrataDataDAL.InsertAllEcbViolations(result.ecb_issue_date);
-            //socrataDataDAL.CheckAlerts(result.OBJECTID);
+            DatabaseMaxValues result = socrataDataDAL.GetMaxValues();
+            socrataDataDAL.InsertAllMapPluto(result.OBJECTID);
+            socrataDataDAL.InsertAllEnergy(result.generation_date);
+            socrataDataDAL.InsertAllPermits(result.dobrundate);
+            socrataDataDAL.InsertAllViolations(result.issue_date);
+            socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
+            socrataDataDAL.InsertAllDistricts(result.DistrictOBJECTID);
+            socrataDataDAL.InsertAllElevators(result.filing_date);
+            socrataDataDAL.InsertAllPropertySales(result.sale_date);
+            socrataDataDAL.InsertAllEcbViolations(result.ecb_issue_date);
+            socrataDataDAL.CheckAlerts(result.OBJECTID);
 
 
             //socrataDataDAL.InsertAllDesignations(0);
@@ -35,9 +35,7 @@ namespace NYC_REI_Console
 
             //socrataDataDAL.hpd_contacts_insert();
             //socrataDataDAL.hpd_registrations_insert();
-
-
-            socrataDataDAL.InsertAllPermitsTemp(null);
+            //socrataDataDAL.hpd_violations_insert();
         }
     }
 }

@@ -21,5 +21,6 @@ namespace NYC_REI_Console.Helpers
 
         public const string hpd_contacts_ID = "feu5-w2e2";
         public const string hpd_registrations_ID = "tesw-yqqr";
+        public const string hpd_violations_ID = "wvxf-dwi5";
     }
 }

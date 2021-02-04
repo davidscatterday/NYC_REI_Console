@@ -44,4 +44,13 @@ namespace NYC_REI_Console.Entities
         public DateTime? RegistrationEndDate { get; set; }
 
     }
+    class hpd_violations_ent
+    {
+        public int? ViolationID { get; set; }
+        public int? BuildingID { get; set; }
+        public int? RegistrationID { get; set; }
+        public string ViolationStatus { get; set; }
+        public string BBL { get; set; }
+
+    }
 }

@@ -245,7 +245,11 @@ namespace NYC_REI_Console.DataAccessLayer
                 }
                 else
                 {
-                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                    var soql = new SoqlQuery()
+                          .Where("dobrundate <> '31//1812' AND job_start_date <> '31//1812'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataPermits>(soql);
                 }
                 if (rows.Count() == 0)
                 {
@@ -1169,6 +1173,47 @@ namespace NYC_REI_Console.DataAccessLayer
 
                             ctx.Database.ExecuteSqlCommand("EXEC dbo.hpd_registrations_insert @RegistrationID, @BuildingID, @BoroID, @Boro, @HouseNumber, @LowHouseNumber, @HighHouseNumber, @StreetName, @Zip, @Block, @Lot, @BIN, @CommunityBoard, @LastRegistrationDate, @RegistrationEndDate",
                                RegistrationIDParameter, BuildingIDParameter, BoroIDParameter, BoroParameter, HouseNumberParameter, LowHouseNumberParameter, HighHouseNumberParameter, StreetNameParameter, ZipParameter, BlockParameter, LotParameter, BINParameter, CommunityBoardParameter, LastRegistrationDateParameter, RegistrationEndDateParameter);
+                        }
+                    }
+                }
+                myOffset += myLimit;
+            }
+        }
+        public void hpd_violations_insert()
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<hpd_violations_ent>(GlobalVariables.hpd_violations_ID);
+
+            IEnumerable<hpd_violations_ent> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            var ViolationIDParameter = keyValue.ViolationID.HasValue ? new SqlParameter("ViolationID", keyValue.ViolationID) : new SqlParameter("ViolationID", DBNull.Value);
+                            var BuildingIDParameter = keyValue.BuildingID.HasValue ? new SqlParameter("BuildingID", keyValue.BuildingID) : new SqlParameter("BuildingID", DBNull.Value);
+                            var RegistrationIDParameter = keyValue.RegistrationID.HasValue ? new SqlParameter("RegistrationID", keyValue.RegistrationID) : new SqlParameter("RegistrationID", DBNull.Value);
+                            var ViolationStatusParameter = !String.IsNullOrEmpty(keyValue.ViolationStatus) ? new SqlParameter("ViolationStatus", keyValue.ViolationStatus) : new SqlParameter("ViolationStatus", DBNull.Value);
+                            var BBLParameter = !String.IsNullOrEmpty(keyValue.BBL) ? new SqlParameter("BBL", keyValue.BBL) : new SqlParameter("BBL", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.hpd_violations_insert @ViolationID, @BuildingID, @RegistrationID, @ViolationStatus, @BBL ",
+                               ViolationIDParameter, BuildingIDParameter, RegistrationIDParameter, ViolationStatusParameter, BBLParameter);
                         }
                     }
                 }
