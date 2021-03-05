@@ -246,6 +246,8 @@ namespace NYC_REI_Console.Entities
         public string OwnerName { get; set; }
         public string BldgClass { get; set; }
         public int? CD { get; set; }
+        public string Tract2010 { get; set; }
+        public string LandUse { get; set; }
     }
 
     class JsonMapDesignationsData
