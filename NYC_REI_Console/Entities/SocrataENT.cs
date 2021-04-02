@@ -93,7 +93,7 @@ namespace NYC_REI_Console.Entities
         public string borough { get; set; }
         public string block { get; set; }
         public string lot { get; set; }
-        public DateTime? job_start_date { get; set; }
+        public string job_start_date { get; set; }
         public string job_type { get; set; }
         public string work_type { get; set; }
         public string bbl_10_digits { get; set; }
@@ -103,6 +103,7 @@ namespace NYC_REI_Console.Entities
         public string permittee_s_last_name { get; set; }
         public string permittee_s_business_name { get; set; }
         public string permittee_s_license_type { get; set; }
+        public string issuance_date { get; set; }
     }
     class SocrataViolations
     {

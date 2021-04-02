@@ -280,15 +280,10 @@ namespace NYC_REI_Console.DataAccessLayer
                         }
                         using (var ctx = new NYC_Web_Mapping_AppEntities())
                         {
-                            bool validDate = false;
-                            if (keyValue.job_start_date.HasValue && keyValue.job_start_date > new DateTime(1753, 1, 1) && keyValue.job_start_date < new DateTime(9999, 1, 1))
-                            {
-                                validDate = true;
-                            }
                             var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
                             var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
                             var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
-                            var job_start_dateParametar = validDate ? new SqlParameter("job_start_date", keyValue.job_start_date) : new SqlParameter("job_start_date", DBNull.Value);
+                            var job_start_dateParametar = GlobalVariables.ToNullableDateTime(keyValue.job_start_date) != null ? new SqlParameter("job_start_date", keyValue.job_start_date) : new SqlParameter("job_start_date", DBNull.Value);
                             var job_typeParametar = !String.IsNullOrEmpty(keyValue.job_type) ? new SqlParameter("job_type", keyValue.job_type) : new SqlParameter("job_type", DBNull.Value);
                             var work_typeParametar = !String.IsNullOrEmpty(keyValue.work_type) ? new SqlParameter("work_type", keyValue.work_type) : new SqlParameter("work_type", DBNull.Value);
                             var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
@@ -298,9 +293,10 @@ namespace NYC_REI_Console.DataAccessLayer
                             var permittee_s_last_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_last_name) ? new SqlParameter("permittee_s_last_name", keyValue.permittee_s_last_name) : new SqlParameter("permittee_s_last_name", DBNull.Value);
                             var permittee_s_business_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_business_name) ? new SqlParameter("permittee_s_business_name", keyValue.permittee_s_business_name) : new SqlParameter("permittee_s_business_name", DBNull.Value);
                             var permittee_s_license_typeParametar = !String.IsNullOrEmpty(keyValue.permittee_s_license_type) ? new SqlParameter("permittee_s_license_type", keyValue.permittee_s_license_type) : new SqlParameter("permittee_s_license_type", DBNull.Value);
+                            var issuance_dateParametar = GlobalVariables.ToNullableDateTime(keyValue.issuance_date) != null ? new SqlParameter("issuance_date", keyValue.issuance_date) : new SqlParameter("issuance_date", DBNull.Value);
 
-                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate, @job__, @permittee_s_first_name, @permittee_s_last_name, @permittee_s_business_name, @permittee_s_license_type ",
-                                boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar, job__Parametar, permittee_s_first_nameParametar, permittee_s_last_nameParametar, permittee_s_business_nameParametar, permittee_s_license_typeParametar);
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate, @job__, @permittee_s_first_name, @permittee_s_last_name, @permittee_s_business_name, @permittee_s_license_type, @issuance_date ",
+                                boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar, job__Parametar, permittee_s_first_nameParametar, permittee_s_last_nameParametar, permittee_s_business_nameParametar, permittee_s_license_typeParametar, issuance_dateParametar);
                         }
                     }
                 }
