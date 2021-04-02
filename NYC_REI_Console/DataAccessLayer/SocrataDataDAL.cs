@@ -811,7 +811,7 @@ namespace NYC_REI_Console.DataAccessLayer
                         }
                         using (var ctx = new NYC_Web_Mapping_AppEntities())
                         {
-                            var addressParametar = !String.IsNullOrEmpty(keyValue.street_name) ? new SqlParameter("address", keyValue.street_name + " " + keyValue.house_no) : new SqlParameter("address", DBNull.Value);
+                            var addressParametar = !String.IsNullOrEmpty(keyValue.street_name) ? new SqlParameter("address", keyValue.house_no + " " + keyValue.street_name) : new SqlParameter("address", DBNull.Value);
                             var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
                             var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
                             var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
