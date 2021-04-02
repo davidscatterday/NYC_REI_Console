@@ -218,12 +218,18 @@ namespace NYC_REI_Console.Entities
     }
     class SocrataSafetyFacadesComplianceFilings
     {
+        public string house_no { get; set; }
+        public string street_name { get; set; }
+        public string address { get; set; }
         public string borough { get; set; }
         public string block { get; set; }
         public string lot { get; set; }
         public string qewi_name { get; set; }
         public string qewi_bus_name { get; set; }
+        public string owner_name { get; set; }
+        public string owner_bus_name { get; set; }
         public DateTime? filing_date { get; set; }
+        public string filing_status { get; set; }
         public string bbl_10_digits { get; set; }
     }
 

@@ -811,16 +811,20 @@ namespace NYC_REI_Console.DataAccessLayer
                         }
                         using (var ctx = new NYC_Web_Mapping_AppEntities())
                         {
+                            var addressParametar = !String.IsNullOrEmpty(keyValue.street_name) ? new SqlParameter("address", keyValue.street_name + " " + keyValue.house_no) : new SqlParameter("address", DBNull.Value);
                             var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
                             var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
                             var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
                             var qewi_nameParametar = !String.IsNullOrEmpty(keyValue.qewi_name) ? new SqlParameter("qewi_name", keyValue.qewi_name) : new SqlParameter("qewi_name", DBNull.Value);
                             var qewi_bus_nameParametar = !String.IsNullOrEmpty(keyValue.qewi_bus_name) ? new SqlParameter("qewi_bus_name", keyValue.qewi_bus_name) : new SqlParameter("qewi_bus_name", DBNull.Value);
+                            var owner_nameParametar = !String.IsNullOrEmpty(keyValue.owner_name) ? new SqlParameter("owner_name", keyValue.owner_name) : new SqlParameter("owner_name", DBNull.Value);
+                            var owner_bus_nameParametar = !String.IsNullOrEmpty(keyValue.owner_bus_name) ? new SqlParameter("owner_bus_name", keyValue.owner_bus_name) : new SqlParameter("owner_bus_name", DBNull.Value);
                             var filing_dateParametar = keyValue.filing_date.HasValue ? new SqlParameter("filing_date", keyValue.filing_date) : new SqlParameter("filing_date", DBNull.Value);
+                            var filing_statusParametar = !String.IsNullOrEmpty(keyValue.filing_status) ? new SqlParameter("filing_status", keyValue.filing_status) : new SqlParameter("filing_status", DBNull.Value);
                             var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
 
-                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertSafetyFacadesComplianceFilings @borough, @block, @lot, @qewi_name, @qewi_bus_name, @filing_date, @bbl_10_digits ",
-                                boroughParametar, blockParametar, lotParametar, qewi_nameParametar, qewi_bus_nameParametar, filing_dateParametar, bbl_10_digitsParametar);
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertSafetyFacadesComplianceFilings @address, @borough, @block, @lot, @qewi_name, @qewi_bus_name, @owner_name, @owner_bus_name, @filing_date, @filing_status, @bbl_10_digits ",
+                                addressParametar, boroughParametar, blockParametar, lotParametar, qewi_nameParametar, qewi_bus_nameParametar, owner_nameParametar, owner_bus_nameParametar, filing_dateParametar, filing_statusParametar, bbl_10_digitsParametar);
                         }
                     }
                 }
