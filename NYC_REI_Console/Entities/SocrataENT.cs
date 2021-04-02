@@ -17,6 +17,7 @@ namespace NYC_REI_Console.Entities
         public DateTime? filing_date { get; set; }
         public DateTime? sale_date { get; set; }
         public string ecb_issue_date { get; set; }
+        public DateTime? filing_date_sfcf { get; set; }
     }
     class SocrataEnergy
     {
@@ -96,7 +97,7 @@ namespace NYC_REI_Console.Entities
         public string job_type { get; set; }
         public string work_type { get; set; }
         public string bbl_10_digits { get; set; }
-        public DateTime? dobrundate { get; set; }
+        public string dobrundate { get; set; }
         public string job__ { get; set; }
         public string permittee_s_first_name { get; set; }
         public string permittee_s_last_name { get; set; }
@@ -214,6 +215,16 @@ namespace NYC_REI_Console.Entities
         public string AGGRAVATED_LEVEL { get; set; }
         public string HEARING_STATUS { get; set; }
         public string CERTIFICATION_STATUS { get; set; }
+    }
+    class SocrataSafetyFacadesComplianceFilings
+    {
+        public string borough { get; set; }
+        public string block { get; set; }
+        public string lot { get; set; }
+        public string qewi_name { get; set; }
+        public string qewi_bus_name { get; set; }
+        public DateTime? filing_date { get; set; }
+        public string bbl_10_digits { get; set; }
     }
 
     class JsonMapPlutoData

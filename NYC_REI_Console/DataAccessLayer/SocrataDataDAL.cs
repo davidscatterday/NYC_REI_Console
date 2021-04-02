@@ -247,11 +247,7 @@ namespace NYC_REI_Console.DataAccessLayer
                 }
                 else
                 {
-                    var soql = new SoqlQuery()
-                          .Where("dobrundate <> '31//1812' AND job_start_date <> '31//1812'")
-                          .Limit(myLimit)
-                          .Offset(myOffset);
-                    rows = dataset.Query<SocrataPermits>(soql);
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
                 }
                 if (rows.Count() == 0)
                 {
@@ -296,7 +292,7 @@ namespace NYC_REI_Console.DataAccessLayer
                             var job_typeParametar = !String.IsNullOrEmpty(keyValue.job_type) ? new SqlParameter("job_type", keyValue.job_type) : new SqlParameter("job_type", DBNull.Value);
                             var work_typeParametar = !String.IsNullOrEmpty(keyValue.work_type) ? new SqlParameter("work_type", keyValue.work_type) : new SqlParameter("work_type", DBNull.Value);
                             var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
-                            var dobrundateParametar = keyValue.dobrundate.HasValue ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
+                            var dobrundateParametar = GlobalVariables.ToNullableDateTime(keyValue.dobrundate) != null ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
                             var job__Parametar = !String.IsNullOrEmpty(keyValue.job__) ? new SqlParameter("job__", keyValue.job__) : new SqlParameter("job__", DBNull.Value);
                             var permittee_s_first_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_first_name) ? new SqlParameter("permittee_s_first_name", keyValue.permittee_s_first_name) : new SqlParameter("permittee_s_first_name", DBNull.Value);
                             var permittee_s_last_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_last_name) ? new SqlParameter("permittee_s_last_name", keyValue.permittee_s_last_name) : new SqlParameter("permittee_s_last_name", DBNull.Value);
@@ -754,6 +750,81 @@ namespace NYC_REI_Console.DataAccessLayer
                         }
                     }
                 }
+            }
+        }
+        public void InsertAllSafetyFacadesComplianceFilings(DateTime? filing_date_sfcf)
+        {
+            var client = new SodaClient("https://data.cityofnewyork.us", GlobalVariables.Token);
+
+            // Get a reference to the resource itself
+            // The result (a Resouce object) is a generic type
+            // The type parameter represents the underlying rows of the resource
+            // and can be any JSON-serializable class
+            var dataset = client.GetResource<SocrataSafetyFacadesComplianceFilings>(GlobalVariables.SafetyFacadesComplianceFilingsID);
+
+            IEnumerable<SocrataSafetyFacadesComplianceFilings> rows;
+            int myLimit = 5000;
+            int myOffset = 0;
+            while (true)
+            {
+                if (filing_date_sfcf.HasValue)
+                {
+                    var strDate = filing_date_sfcf.Value.Year + "-" + filing_date_sfcf.Value.Month + "-" + filing_date_sfcf.Value.Day;
+                    var soql = new SoqlQuery()
+                          .Where("filing_date > '" + strDate + "'")
+                          .Limit(myLimit)
+                          .Offset(myOffset);
+                    rows = dataset.Query<SocrataSafetyFacadesComplianceFilings>(soql);
+                }
+                else
+                {
+                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                }
+                if (rows.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (var keyValue in rows)
+                    {
+                        var boroNum = "";
+                        switch (keyValue.borough)
+                        {
+                            case "MANHATTAN":
+                                boroNum = "1"; break;
+                            case "BRONX":
+                                boroNum = "2"; break;
+                            case "BROOKLYN":
+                                boroNum = "3"; break;
+                            case "QUEENS":
+                                boroNum = "4"; break;
+                            case "STATEN ISLAND":
+                                boroNum = "5"; break;
+                            default:
+                                return;
+                        }
+                        string bbl_10_digits = "";
+                        if (!String.IsNullOrEmpty(boroNum) && !String.IsNullOrEmpty(keyValue.block) && !String.IsNullOrEmpty(keyValue.lot))
+                        {
+                            bbl_10_digits = boroNum + keyValue.block.PadLeft(5, '0') + keyValue.lot.PadLeft(4, '0');
+                        }
+                        using (var ctx = new NYC_Web_Mapping_AppEntities())
+                        {
+                            var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
+                            var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
+                            var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
+                            var qewi_nameParametar = !String.IsNullOrEmpty(keyValue.qewi_name) ? new SqlParameter("qewi_name", keyValue.qewi_name) : new SqlParameter("qewi_name", DBNull.Value);
+                            var qewi_bus_nameParametar = !String.IsNullOrEmpty(keyValue.qewi_bus_name) ? new SqlParameter("qewi_bus_name", keyValue.qewi_bus_name) : new SqlParameter("qewi_bus_name", DBNull.Value);
+                            var filing_dateParametar = keyValue.filing_date.HasValue ? new SqlParameter("filing_date", keyValue.filing_date) : new SqlParameter("filing_date", DBNull.Value);
+                            var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
+
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertSafetyFacadesComplianceFilings @borough, @block, @lot, @qewi_name, @qewi_bus_name, @filing_date, @bbl_10_digits ",
+                                boroughParametar, blockParametar, lotParametar, qewi_nameParametar, qewi_bus_nameParametar, filing_dateParametar, bbl_10_digitsParametar);
+                        }
+                    }
+                }
+                myOffset += myLimit;
             }
         }
         public DatabaseMaxValues GetMaxValues()
