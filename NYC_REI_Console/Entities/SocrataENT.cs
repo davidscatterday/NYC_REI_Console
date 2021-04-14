@@ -138,6 +138,9 @@ namespace NYC_REI_Console.Entities
         public string RESIDENTIAL_COMMERCIAL_IND { get; set; }
         public string BOROUGH { get; set; }
         public string EVICTION_ZIP { get; set; }
+        public string CENSUS_TRACT { get; set; }
+        public string BBL { get; set; }
+        public string NTA { get; set; }
     }
     class SocrataElevators
     {

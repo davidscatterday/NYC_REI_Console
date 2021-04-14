@@ -283,17 +283,17 @@ namespace NYC_REI_Console.DataAccessLayer
                             var boroughParametar = !String.IsNullOrEmpty(keyValue.borough) ? new SqlParameter("borough", keyValue.borough) : new SqlParameter("borough", DBNull.Value);
                             var blockParametar = !String.IsNullOrEmpty(keyValue.block) ? new SqlParameter("block", keyValue.block) : new SqlParameter("block", DBNull.Value);
                             var lotParametar = !String.IsNullOrEmpty(keyValue.lot) ? new SqlParameter("lot", keyValue.lot) : new SqlParameter("lot", DBNull.Value);
-                            var job_start_dateParametar = GlobalVariables.ToNullableDateTime(keyValue.job_start_date) != null ? new SqlParameter("job_start_date", keyValue.job_start_date) : new SqlParameter("job_start_date", DBNull.Value);
+                            var job_start_dateParametar = GlobalVariables.ToNullableDateTime(keyValue.job_start_date).HasValue && GlobalVariables.ToNullableDateTime(keyValue.job_start_date).Value.Year >= 1753 ? new SqlParameter("job_start_date", keyValue.job_start_date) : new SqlParameter("job_start_date", DBNull.Value);
                             var job_typeParametar = !String.IsNullOrEmpty(keyValue.job_type) ? new SqlParameter("job_type", keyValue.job_type) : new SqlParameter("job_type", DBNull.Value);
                             var work_typeParametar = !String.IsNullOrEmpty(keyValue.work_type) ? new SqlParameter("work_type", keyValue.work_type) : new SqlParameter("work_type", DBNull.Value);
                             var bbl_10_digitsParametar = !String.IsNullOrEmpty(bbl_10_digits) ? new SqlParameter("bbl_10_digits", bbl_10_digits) : new SqlParameter("bbl_10_digits", DBNull.Value);
-                            var dobrundateParametar = GlobalVariables.ToNullableDateTime(keyValue.dobrundate) != null ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
+                            var dobrundateParametar = GlobalVariables.ToNullableDateTime(keyValue.dobrundate).HasValue && GlobalVariables.ToNullableDateTime(keyValue.dobrundate).Value.Year >= 1753 ? new SqlParameter("dobrundate", keyValue.dobrundate) : new SqlParameter("dobrundate", DBNull.Value);
                             var job__Parametar = !String.IsNullOrEmpty(keyValue.job__) ? new SqlParameter("job__", keyValue.job__) : new SqlParameter("job__", DBNull.Value);
                             var permittee_s_first_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_first_name) ? new SqlParameter("permittee_s_first_name", keyValue.permittee_s_first_name) : new SqlParameter("permittee_s_first_name", DBNull.Value);
                             var permittee_s_last_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_last_name) ? new SqlParameter("permittee_s_last_name", keyValue.permittee_s_last_name) : new SqlParameter("permittee_s_last_name", DBNull.Value);
                             var permittee_s_business_nameParametar = !String.IsNullOrEmpty(keyValue.permittee_s_business_name) ? new SqlParameter("permittee_s_business_name", keyValue.permittee_s_business_name) : new SqlParameter("permittee_s_business_name", DBNull.Value);
                             var permittee_s_license_typeParametar = !String.IsNullOrEmpty(keyValue.permittee_s_license_type) ? new SqlParameter("permittee_s_license_type", keyValue.permittee_s_license_type) : new SqlParameter("permittee_s_license_type", DBNull.Value);
-                            var issuance_dateParametar = GlobalVariables.ToNullableDateTime(keyValue.issuance_date) != null ? new SqlParameter("issuance_date", keyValue.issuance_date) : new SqlParameter("issuance_date", DBNull.Value);
+                            var issuance_dateParametar = GlobalVariables.ToNullableDateTime(keyValue.issuance_date).HasValue && GlobalVariables.ToNullableDateTime(keyValue.issuance_date).Value.Year >= 1753 ? new SqlParameter("issuance_date", keyValue.issuance_date) : new SqlParameter("issuance_date", DBNull.Value);
 
                             ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertPermit @borough, @block, @lot, @job_start_date, @job_type, @work_type, @bbl_10_digits, @dobrundate, @job__, @permittee_s_first_name, @permittee_s_last_name, @permittee_s_business_name, @permittee_s_license_type, @issuance_date ",
                                 boroughParametar, blockParametar, lotParametar, job_start_dateParametar, job_typeParametar, work_typeParametar, bbl_10_digitsParametar, dobrundateParametar, job__Parametar, permittee_s_first_nameParametar, permittee_s_last_nameParametar, permittee_s_business_nameParametar, permittee_s_license_typeParametar, issuance_dateParametar);
@@ -329,7 +329,11 @@ namespace NYC_REI_Console.DataAccessLayer
                 }
                 else
                 {
-                    rows = dataset.GetRows(limit: myLimit, offset: myOffset);
+                    var soql = new SoqlQuery()
+                             .Where("EXECUTED_DATE < '2030-01-01'")
+                             .Limit(myLimit)
+                             .Offset(myOffset);
+                    rows = dataset.Query<SocrataEvictions>(soql);
                 }
                 if (rows.Count() == 0)
                 {
@@ -351,10 +355,14 @@ namespace NYC_REI_Console.DataAccessLayer
                             var RESIDENTIAL_COMMERCIAL_INDParametar = !String.IsNullOrEmpty(keyValue.RESIDENTIAL_COMMERCIAL_IND) ? new SqlParameter("RESIDENTIAL_COMMERCIAL_IND", keyValue.RESIDENTIAL_COMMERCIAL_IND) : new SqlParameter("RESIDENTIAL_COMMERCIAL_IND", DBNull.Value);
                             var BOROUGHParametar = !String.IsNullOrEmpty(keyValue.BOROUGH) ? new SqlParameter("BOROUGH", keyValue.BOROUGH) : new SqlParameter("BOROUGH", DBNull.Value);
                             var EVICTION_ZIPParametar = !String.IsNullOrEmpty(keyValue.EVICTION_ZIP) ? new SqlParameter("EVICTION_ZIP", keyValue.EVICTION_ZIP) : new SqlParameter("EVICTION_ZIP", DBNull.Value);
+                            var CENSUS_TRACTParametar = !String.IsNullOrEmpty(keyValue.CENSUS_TRACT) ? new SqlParameter("CENSUS_TRACT", keyValue.CENSUS_TRACT) : new SqlParameter("CENSUS_TRACT", DBNull.Value);
+                            var BBLParametar = !String.IsNullOrEmpty(keyValue.BBL) ? new SqlParameter("BBL", keyValue.BBL) : new SqlParameter("BBL", DBNull.Value);
+                            var NTAParametar = !String.IsNullOrEmpty(keyValue.NTA) ? new SqlParameter("NTA", keyValue.NTA) : new SqlParameter("NTA", DBNull.Value);
 
-                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertEviction @COURT_INDEX_NUMBER, @DOCKET_NUMBER, @EVICTION_ADDRESS, @EVICTION_APT_NUM, @EXECUTED_DATE, @MARSHAL_FIRST_NAME, @MARSHAL_LAST_NAME, @RESIDENTIAL_COMMERCIAL_IND, @BOROUGH, @EVICTION_ZIP ",
+                            ctx.Database.ExecuteSqlCommand("EXEC dbo.InsertEviction @COURT_INDEX_NUMBER, @DOCKET_NUMBER, @EVICTION_ADDRESS, @EVICTION_APT_NUM, @EXECUTED_DATE, @MARSHAL_FIRST_NAME, @MARSHAL_LAST_NAME, @RESIDENTIAL_COMMERCIAL_IND, @BOROUGH, @EVICTION_ZIP, @CENSUS_TRACT, @BBL, @NTA ",
                                 COURT_INDEX_NUMBERParametar, DOCKET_NUMBERParametar, EVICTION_ADDRESSParametar, EVICTION_APT_NUMParametar, EXECUTED_DATEParametar,
-                                MARSHAL_FIRST_NAMEParametar, MARSHAL_LAST_NAMEParametar, RESIDENTIAL_COMMERCIAL_INDParametar, BOROUGHParametar, EVICTION_ZIPParametar);
+                                MARSHAL_FIRST_NAMEParametar, MARSHAL_LAST_NAMEParametar, RESIDENTIAL_COMMERCIAL_INDParametar, BOROUGHParametar, EVICTION_ZIPParametar,
+                                CENSUS_TRACTParametar, BBLParametar, NTAParametar);
                         }
                     }
                 }
