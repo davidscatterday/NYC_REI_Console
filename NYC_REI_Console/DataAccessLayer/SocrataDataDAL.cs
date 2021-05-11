@@ -936,6 +936,17 @@ namespace NYC_REI_Console.DataAccessLayer
                         sqlQuery += " OR (el.sale_date > '" + formatedDate + "' AND el.sale_date < '2030-01-01')";
                     }
                 }
+                if (!String.IsNullOrEmpty(alert.ProjectSearchAdditional))
+                {
+                    if (sqlQuery.EndsWith("("))
+                    {
+                        sqlQuery += " " + alert.ProjectSearchAdditional.Replace("myFormatedDate", formatedDate);
+                    }
+                    else
+                    {
+                        sqlQuery += " OR " + alert.ProjectSearchAdditional.Replace("myFormatedDate", formatedDate);
+                    }
+                }
                 sqlQuery += ")";
                 List<DatabaseAttributes> newSearch = SearchDatabase(sqlQuery);
                 if (newSearch.Count > 0)

@@ -25,7 +25,7 @@ namespace NYC_REI_Console.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<MyAlert> MyAlerts { get; set; }
         public virtual DbSet<SecFiling> SecFilings { get; set; }
+        public virtual DbSet<MyAlert> MyAlerts { get; set; }
     }
 }

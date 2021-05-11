@@ -18,13 +18,13 @@ namespace NYC_REI_Console
             //socrataDataDAL.InsertAllEnergy(result.generation_date);
             //socrataDataDAL.InsertAllPermits(result.dobrundate);
             //socrataDataDAL.InsertAllViolations(result.issue_date);
-            socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
+            //socrataDataDAL.InsertAllEvictions(result.EXECUTED_DATE);
             //socrataDataDAL.InsertAllDistricts(result.DistrictOBJECTID);
             //socrataDataDAL.InsertAllElevators(result.filing_date);
             //socrataDataDAL.InsertAllPropertySales(result.sale_date);
             //socrataDataDAL.InsertAllEcbViolations(result.ecb_issue_date);
             //socrataDataDAL.InsertAllSafetyFacadesComplianceFilings(result.filing_date_sfcf);
-            //socrataDataDAL.CheckAlerts(result.OBJECTID);
+            socrataDataDAL.CheckAlerts(result.OBJECTID);
 
 
             //socrataDataDAL.InsertAllDesignations(0);
